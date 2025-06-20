@@ -1,5 +1,5 @@
 
-# Get a years worth of temp/discharge data from a CSV file (used by the reactive plots)
+### Get a years worth of temp/discharge data from a CSV file (used by the reactive plots)
 get_year_data <- function(year) {
   
   ## Read the correct CSV file and return the output
@@ -21,20 +21,19 @@ get_year_data <- function(year) {
   
 } 
 
+
+### Get a single year's worth of critical dates
 get_year_dates <- function(year, species) {
   
   ## Read the correct CSV file of critical dates and return one year's dates
   
   if(species == "Brown") {
     filename <- "save_2/BT_Critical_Dates.csv"
-    
     dates <- read.csv(filename, 
                          colClasses = c("integer", "Date", "Date", "Date", "Date", 
                                         "Date", "Date", "Date"))
-    
     correct_row <- dates %>%
       filter(Year == year)
-    
     return(correct_row)
     
   } else if(species == "Rainbow") {
@@ -46,17 +45,16 @@ get_year_dates <- function(year, species) {
 }
 
 
+### Get all years' worth of critical dates
 get_all_dates <- function(species) {
   
   ## Read the correct CSV file of critical dates and return all dates
   
   if(species == "Brown") {
     filename <- "save_2/BT_Critical_Dates.csv"
-    
     dates <- read.csv(filename, 
                       colClasses = c("integer", "Date", "Date", "Date", "Date", 
                                      "Date", "Date", "Date"))
-    
     return(dates)
     
   } else if(species == "Rainbow") {

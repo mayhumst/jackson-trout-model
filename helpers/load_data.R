@@ -1,17 +1,14 @@
 
 
-
-
-
 ### Query USGS for necessary data; interpolate and clean data, then return. 
 get_USGS <- function(WTP, GD, TD, TC, Temp, Dis, FallStart, SpringEnd, StDate, EndDate) {
   
   ## Download continuous water data from USGS servers
   
   GD_Data <- readNWISuv(GD, TD, startDate = FallStart, 
-                        endDate = SpringEnd)
+                        endDate = SpringEnd, tz="America/New_York")
   WTP_Data <- readNWISuv(WTP, TC, startDate = FallStart, 
-                         endDate = SpringEnd)
+                         endDate = SpringEnd, tz="America/New_York")
   
   GD_Data$Date <- as.Date(GD_Data$dateTime)
   GD_mean <- ddply(GD_Data,c("Date"), summarise,
@@ -54,6 +51,8 @@ get_USGS <- function(WTP, GD, TD, TC, Temp, Dis, FallStart, SpringEnd, StDate, E
   
 }
 
+
+### Given the current date and the date of last update, download any missing data
 update_data <- function(today, last_update) {
   
   ## Set ID numbers for gage locations and parameters to download data from USGS
@@ -157,7 +156,7 @@ update_data <- function(today, last_update) {
 }
 
 
-
+### Check date of last update, determine whether new data must be downloaded
 load_data <- function() {
   
   ## Determine current date and date of last update (all in UTC)
@@ -179,21 +178,6 @@ load_data <- function() {
     write.table(my_data, file = "last_update.txt", sep = "\t",
                 row.names = FALSE, col.names = FALSE)
   }
-  
-  
-  
-  # WTP <-"02012800"
-  # GD <- "02011800"
-  # 
-  # TD <- c("00010", "00060")
-  # TC <- "00010"
-  # Temp <- "X_00010_00000"
-  # Dis <- "X_00060_00000"
-  # 
-  # WTP_Data_2 <- readNWISuv(WTP, TC, startDate = "2025-06-10", 
-  #                        endDate = "2025-06-11", tz="America/New_York")
-  
-  
   
 }
 
