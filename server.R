@@ -7,6 +7,12 @@
 ## Define server function
 server <- function(input, output) {
   
+  ## Check for data updates
+  load_data()
+  
+  ## Get current year
+  curr_water_year <- calculate_water_year(as.Date(Sys.time(), tz = "UTC"))
+  
   ## Render plot for old years
   output$OldYearsPlot <- renderPlot({
     
@@ -14,18 +20,9 @@ server <- function(input, output) {
     Species <- input$Species
     SpringYear <- as.integer(input$Year)
     
-    ## Calculate graph inputs
-    FallYear <- SpringYear-1
-    StartDate <- paste(toString(FallYear), "-10-1", sep="")
-    EndDate <- paste(toString(SpringYear), "-7-1", sep="")
-    
     ## Display plot - old years
-    show_graph(All_Temps,
-               Graph_Crit_Dates,
-               as.Date(StartDate),
-               as.Date(EndDate),
-               FallYear,
-               SpringYear)
+    show_graph(get_year_data(SpringYear),
+               get_year_dates(SpringYear, Species))
   })
   
   ## Render plot title for old years
@@ -43,10 +40,11 @@ server <- function(input, output) {
   ## Render key dates for single (old) year
   output$OldYearDateTable <- renderTable({
     
-    ## Get the single row of critical dates
-    Single_Year <- Graph_Crit_Dates %>%
-      filter(Year == input$Year)
+    ## Get variables from inputs
+    Species <- input$Species
     
+    ## Get the single row of critical dates
+    Single_Year <- get_year_dates(as.integer(input$Year), Species)
     ## Drop the "Year" column
     Single_Year <- Single_Year[c("SpawnStart", "SpawnPeak", "SpawnEnd", 
                                  "HaStart", "HaPeak", "EmStart", "EmPeak")]
@@ -75,27 +73,21 @@ server <- function(input, output) {
     
     ## Get variables from inputs
     Species <- input$Species
-    SpringYear <- 2025
-    
-    ## Calculate graph inputs
-    FallYear <- SpringYear-1
-    StartDate <- paste(toString(FallYear), "-10-1", sep="")
-    EndDate <- paste(toString(SpringYear), "-7-1", sep="")
+    SpringYear <- curr_water_year
     
     ## Display plot - old years
-    show_graph(All_Temps,
-               Graph_Crit_Dates,
-               as.Date(StartDate),
-               as.Date(EndDate),
-               FallYear,
-               SpringYear)
+    show_graph(get_year_data(SpringYear),
+               get_year_dates(SpringYear, Species))
   })
   
   ## Render table for all key dates tab
   output$AllKeyDatesTable <- renderTable({
     
+    ## Get inputs
+    Species <- input$Species
+    
     ## Copy Table of critical dates
-    Key_Dates <- Graph_Crit_Dates
+    Key_Dates <- get_all_dates(Species)
     
     ## Change integer year (2008) to string range (2007-2008)
     Key_Dates$Year <- paste(Key_Dates$Year - 1, Key_Dates$Year, sep = "-")

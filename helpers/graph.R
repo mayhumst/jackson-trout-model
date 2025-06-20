@@ -3,13 +3,8 @@
 # This module takes in the data and builds a graph
 #
 
-show_graph <- function(Temps, Crit_Dates, StartDate, EndDate, FallYear, SpringYear) {
+show_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   
-  ## Get the subset of Temps necessary for this graph
-  
-  This_Year_Temps <- subset(Temps, Date >= StartDate)
-  This_Year_Temps <- subset(This_Year_Temps, Date <= EndDate)
-  print(This_Year_Temps)
   
   ## Scale the discharge information to the same scale/Y-axis as temperature
   
@@ -20,8 +15,6 @@ show_graph <- function(Temps, Crit_Dates, StartDate, EndDate, FallYear, SpringYe
   
   ## Get critical dates
   
-  This_Year_Crit_Dates <- subset(Crit_Dates, Year == SpringYear)
-  
   FSp_Start <- This_Year_Crit_Dates$SpawnStart[[1]]
   FSp_Peak <- This_Year_Crit_Dates$SpawnPeak[[1]]
   FSp_End <- This_Year_Crit_Dates$SpawnEnd[[1]]
@@ -31,9 +24,6 @@ show_graph <- function(Temps, Crit_Dates, StartDate, EndDate, FallYear, SpringYe
   emergence_peak_date <- This_Year_Crit_Dates$EmPeak[[1]]
   
   ## Build graph
-  
-  #plot_title <- paste(toString(FallYear), "-", toString(SpringYear), 
-  #                    "Brown Trout Spawn, Hatch, and Emergence")
   
   TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date)) +
     geom_line( aes(y=MeanT), linewidth=1, color="blue") +

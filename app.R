@@ -23,18 +23,14 @@ library(readr)
 ## Import helper functions from other files
 source("./helpers/get_data.R")
 source("./helpers/graph.R")
+source("./helpers/load_data.R")
+source("./helpers/model.R")
+source("./helpers/server_functions.R")
 source("./server.R")
 source("./ui.R")
 
-## Set variables for start and end years
-StYear <- 2024
-CurrDate <- Sys.Date() - 1
-EndYear <- as.integer(format(CurrDate, "%Y"))
-EndDay <- toString(format(CurrDate, "-%m-%d"))
-
-## Download/process data
-All_Temps <- get_BT_data(StYear, EndYear)
-Graph_Crit_Dates <- model_crit_dates(All_Temps, StYear, EndYear)
+## Download/process/update data
+load_data()
 
 ## Run the Shiny app
 shinyApp(ui = ui, server = server)
