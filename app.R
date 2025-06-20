@@ -21,7 +21,6 @@ library(readr)
 #library(shinydashboardPlus)
 
 ## Import helper functions from other files
-source("./helpers/get_data.R")
 source("./helpers/graph.R")
 source("./helpers/load_data.R")
 source("./helpers/model.R")

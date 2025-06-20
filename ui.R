@@ -1,6 +1,20 @@
 ## UI sidebar
 sidebar <- sidebar(
   
+  ## Sidebar input when on "This Year" tab
+  conditionalPanel(condition = "input.tabs == 'This Year'", 
+    # Input: Select species
+    selectInput(
+      "Species",
+      "Select species:",
+      choices = list("Brown Trout" = "Brown",
+                    "Rainbow Trout" = "Rainbow"
+      ),
+      selected = "Brown"
+    ),
+  ), 
+  
+  
   ## Sidebar input when on "Old Years" tab
   conditionalPanel(condition = "input.tabs == 'Old Years'", 
                    
@@ -40,8 +54,9 @@ sidebar <- sidebar(
     )
   ), 
   
-  ## Sidebar input when on "This Year" tab
-  conditionalPanel(condition = "input.tabs == 'This Year'", 
+  
+  ## Sidebar input when on "Key Dates" tab
+  conditionalPanel(condition = "input.tabs == 'Key Dates'",
     # Input: Select species
     selectInput(
       "Species",
@@ -50,7 +65,7 @@ sidebar <- sidebar(
                      "Rainbow Trout" = "Rainbow"
       ),
       selected = "Brown"
-    ),
+    )
   )
 )
 
