@@ -84,6 +84,6 @@ calculate_water_year <- function(this_date) {
     this_water_year <- as.integer(format(this_date, "%Y")) + 1
   }
   
-  ## Return
+  ## Return integer water year
   return(this_water_year)
 }

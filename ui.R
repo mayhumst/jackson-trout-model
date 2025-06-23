@@ -2,6 +2,19 @@
 # This module defines the shiny UI that will be called to run the app.
 #
 
+## Determine current year so our selectInput is up-to-date
+curr_water_year <- calculate_water_year(as.Date(Sys.time(), tz = "UTC"))
+year_range <- seq(from = 2008, to = curr_water_year - 1)
+year_list <- as.list(year_range)
+for(i in 1:length(year_range)) {
+  year_range[i] <- paste(
+    toString(as.integer(year_range[i]) - 1), 
+    toString(as.integer(year_range[i])), 
+    sep = "-" 
+  )
+}
+names(year_list) <- year_range
+
 
 ## UI sidebar component
 sidebar <- sidebar(
@@ -37,24 +50,7 @@ sidebar <- sidebar(
     selectInput(
       "Year",
       "Select year:",
-      choices = list("2007-2008" = 2008,
-                     "2008-2009" = 2009,
-                     "2009-2010" = 2010,
-                     "2010-2011" = 2011,
-                     "2011-2012" = 2012,
-                     "2012-2013" = 2013,
-                     "2013-2014" = 2014,
-                     "2014-2015" = 2015,
-                     "2015-2016" = 2016,
-                     "2016-2017" = 2017,
-                     "2017-2018" = 2018,
-                     "2018-2019" = 2019,
-                     "2019-2020" = 2020,
-                     "2020-2021" = 2021,
-                     "2021-2022" = 2022,
-                     "2022-2023" = 2023,
-                     "2023-2024" = 2024
-      ),
+      choices = year_list,
       selected = 2009
     )
   ), 
