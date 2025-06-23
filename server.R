@@ -1,10 +1,10 @@
 #
-# This module defines the server function that will be called to run the app.
+# This module defines the shiny server function that will be called to run the app.
 #
 
 
 
-## Define server function
+### Define app server 
 server <- function(input, output) {
   
   ## Check for data updates
@@ -21,7 +21,7 @@ server <- function(input, output) {
     SpringYear <- as.integer(input$Year)
     
     ## Display plot - old years
-    show_graph(get_year_data(SpringYear),
+    BT_graph(get_year_data(SpringYear),
                get_year_dates(SpringYear, Species))
   })
   
@@ -76,7 +76,7 @@ server <- function(input, output) {
     SpringYear <- curr_water_year
     
     ## Display plot - old years
-    show_graph(get_year_data(SpringYear),
+    BT_graph(get_year_data(SpringYear),
                get_year_dates(SpringYear, Species))
   })
   

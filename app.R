@@ -6,7 +6,6 @@
 
 
 ## Load libraries
-
 library(shiny)
 library(bslib)
 library(dataRetrieval)
@@ -17,8 +16,6 @@ library(tidyr)
 library(zoo)
 library(forecast)
 library(readr)
-#library(shinydashboard)
-#library(shinydashboardPlus)
 
 ## Import helper functions from other files
 source("./helpers/graph.R")

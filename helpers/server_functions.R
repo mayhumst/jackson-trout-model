@@ -1,5 +1,8 @@
+#
+# This module contains helper functions to be used by the server to query for necessary data
+#
 
-### Get a years worth of temp/discharge data from a CSV file (used by the reactive plots)
+### Get a single year's worth of temp/discharge data from a CSV file (used by the reactive plots)
 get_year_data <- function(year) {
   
   ## Read the correct CSV file and return the output

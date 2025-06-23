@@ -1,9 +1,11 @@
 
 #
-# This module takes in the data and builds a graph
+# This module takes in data and returns a plot
 #
 
-show_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
+
+## This function builds a plot depicting Brown Trout model data
+BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   
   
   ## Scale the discharge information to the same scale/Y-axis as temperature

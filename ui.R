@@ -1,4 +1,9 @@
-## UI sidebar
+#
+# This module defines the shiny UI that will be called to run the app.
+#
+
+
+## UI sidebar component
 sidebar <- sidebar(
   
   ## Sidebar input when on "This Year" tab
@@ -72,6 +77,11 @@ sidebar <- sidebar(
 
 ## UI main body
 body <- navset_pill(id = "tabs", 
+    nav_panel("This Year", 
+      card(
+        plotOutput(outputId = "ThisYearPlot")
+      )
+    ), 
     nav_panel("Old Years", 
       card(
         htmlOutput(outputId = "OldYearsPlotTitle"),
@@ -81,11 +91,6 @@ body <- navset_pill(id = "tabs",
         tableOutput(outputId = "OldYearDateTable")
       )
     ),
-    nav_panel("This Year", 
-      card(
-        plotOutput(outputId = "ThisYearPlot")
-      )
-    ), 
     nav_panel("Key Dates",
       card(
         tableOutput(outputId = "AllKeyDatesTable")
@@ -96,7 +101,7 @@ body <- navset_pill(id = "tabs",
 
 
 
-# Define user interface
+## Define user interface
 ui <- page_sidebar(
   
   # App header
