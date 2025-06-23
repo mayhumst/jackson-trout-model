@@ -4,7 +4,7 @@ get_year_data <- function(year) {
   
   ## Read the correct CSV file and return the output
   
-  filename = paste("save_2/", 
+  filename = paste("data/", 
                    toString(year-1), 
                    "-", 
                    toString(year), 
@@ -28,7 +28,7 @@ get_year_dates <- function(year, species) {
   ## Read the correct CSV file of critical dates and return one year's dates
   
   if(species == "Brown") {
-    filename <- "save_2/BT_Critical_Dates.csv"
+    filename <- "data/BT_Critical_Dates.csv"
     dates <- read.csv(filename, 
                          colClasses = c("integer", "Date", "Date", "Date", "Date", 
                                         "Date", "Date", "Date"))
@@ -51,7 +51,7 @@ get_all_dates <- function(species) {
   ## Read the correct CSV file of critical dates and return all dates
   
   if(species == "Brown") {
-    filename <- "save_2/BT_Critical_Dates.csv"
+    filename <- "data/BT_Critical_Dates.csv"
     dates <- read.csv(filename, 
                       colClasses = c("integer", "Date", "Date", "Date", "Date", 
                                      "Date", "Date", "Date"))

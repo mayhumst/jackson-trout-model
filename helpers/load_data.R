@@ -111,7 +111,7 @@ update_data <- function(today, last_update) {
     
     ## Write the year's data to a CSV file
     
-    filename = paste("save_2/", 
+    filename = paste("data/", 
                      toString(i-1), 
                      "-", 
                      toString(i), 
@@ -125,7 +125,7 @@ update_data <- function(today, last_update) {
     
     ## Update the CSV file with Brown Trout critical dates
     
-    filename = "save_2/BT_Critical_Dates.csv"
+    filename = "data/BT_Critical_Dates.csv"
     #old_data <- read.csv(filename, row.names = FALSE)
     #print(old_data)
     old_data <- read.csv(filename, 
