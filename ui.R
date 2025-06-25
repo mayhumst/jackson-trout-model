@@ -5,7 +5,7 @@
 ## Determine current year so our selectInput is up-to-date
 get_year_range <- function() {
   curr_water_year <- calculate_water_year(as.Date(Sys.time(), tz = "UTC"))
-  year_range <- seq(from = 2008, to = curr_water_year - 1)
+  year_range <- seq(from = curr_water_year - 1, to = 2008)
   year_list <- as.list(year_range)
   for(i in 1:length(year_range)) {
     year_range[i] <- paste(
@@ -28,12 +28,11 @@ sidebar <- sidebar(
   conditionalPanel(condition = "input.tabs == 'This Year'", 
     # Input: Select species
     selectInput(
-      "Species",
+      "Species_ThisYear",
       "Select species:",
       choices = list("Brown Trout" = "Brown",
                     "Rainbow Trout" = "Rainbow"
-      ),
-      selected = "Brown"
+      )
     ),
   ), 
   
@@ -43,20 +42,18 @@ sidebar <- sidebar(
                    
     # Input: Select species
     selectInput(
-      "Species",
+      "Species_OldYears",
       "Select species:",
       choices = list("Brown Trout" = "Brown",
                   "Rainbow Trout" = "Rainbow"
-      ),
-      selected = "Brown"
+      )
     ),
                      
     # Input: Select year
     selectInput(
       "Year",
       "Select year:",
-      choices = year_list,
-      selected = 2009
+      choices = year_list
     )
   ), 
   
@@ -65,12 +62,11 @@ sidebar <- sidebar(
   conditionalPanel(condition = "input.tabs == 'Key Dates'",
     # Input: Select species
     selectInput(
-      "Species",
+      "Species_KeyDates",
       "Select species:",
       choices = list("Brown Trout" = "Brown",
                      "Rainbow Trout" = "Rainbow"
-      ),
-      selected = "Brown"
+      )
     )
   )
 )
@@ -80,7 +76,11 @@ sidebar <- sidebar(
 body <- navset_pill(id = "tabs", 
     nav_panel("This Year", 
       card(
+        htmlOutput(outputId = "ThisYearPlotTitle"),
         plotOutput(outputId = "ThisYearPlot")
+      ),
+      card(
+        tableOutput(outputId = "ThisYearDateTable")
       )
     ), 
     nav_panel("Old Years", 
