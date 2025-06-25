@@ -126,8 +126,6 @@ update_data <- function(today, last_update) {
     ## Update the CSV file with Brown Trout critical dates
     
     filename = "data/BT_Critical_Dates.csv"
-    #old_data <- read.csv(filename, row.names = FALSE)
-    #print(old_data)
     old_data <- read.csv(filename, 
                          colClasses = c("integer", "Date", "Date", "Date", "Date", 
                                         "Date", "Date", "Date"))
@@ -145,9 +143,33 @@ update_data <- function(today, last_update) {
     write.csv(old_data, filename, row.names=FALSE)
     
     ## Run Rainbow Trout model to update critical dates
+
+    RT_crit_dates <- RT_model(Temps_This_Year, i)
     
+    print(RT_crit_dates)
+
     ## Update the CSV file with Rainbow Trout critical dates
+
+    filename = "data/RT_Critical_Dates.csv"
+    old_data <- read.csv(filename,
+                         colClasses = c("integer", "integer", "Date", "Date", "Date", "integer",
+                                        "Date", "Date", "Date"))
+    print(old_data)
+    check_to_replace <- old_data %>%
+      filter(Year == i)
+
+    if(nrow(check_to_replace) == 1) { # if the critical dates already has an entry for this water year
+      old_data[old_data$Year == i,] <- RT_crit_dates
+    } else {
+      old_data <- old_data %>%
+        bind_rows(RT_crit_dates)
+    }
     
+    print(old_data)
+
+    write.csv(old_data, filename, row.names=FALSE)
+    
+
   }
 
   
@@ -163,9 +185,6 @@ load_data <- function() {
   today_UTC <- as.Date(Sys.time(), tz = "UTC")
   my_data <- read_delim("last_update.txt", delim = "\t", col_names = FALSE)
   this_last_update <- as.Date(my_data[[1,1]])
-  
-  print(today_UTC)
-  print(this_last_update)
   
   ## Check if data needs to be updated/downloaded
   if(today_UTC > this_last_update) { 

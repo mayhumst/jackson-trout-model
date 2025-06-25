@@ -3,17 +3,22 @@
 #
 
 ## Determine current year so our selectInput is up-to-date
-curr_water_year <- calculate_water_year(as.Date(Sys.time(), tz = "UTC"))
-year_range <- seq(from = 2008, to = curr_water_year - 1)
-year_list <- as.list(year_range)
-for(i in 1:length(year_range)) {
-  year_range[i] <- paste(
-    toString(as.integer(year_range[i]) - 1), 
-    toString(as.integer(year_range[i])), 
-    sep = "-" 
-  )
+get_year_range <- function() {
+  curr_water_year <- calculate_water_year(as.Date(Sys.time(), tz = "UTC"))
+  year_range <- seq(from = 2008, to = curr_water_year - 1)
+  year_list <- as.list(year_range)
+  for(i in 1:length(year_range)) {
+    year_range[i] <- paste(
+      toString(as.integer(year_range[i]) - 1), 
+      toString(as.integer(year_range[i])), 
+      sep = "-" 
+    )
+  }
+  names(year_list) <- year_range
+  return(year_list)
 }
-names(year_list) <- year_range
+
+year_list <- get_year_range()
 
 
 ## UI sidebar component

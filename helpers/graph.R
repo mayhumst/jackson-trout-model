@@ -4,7 +4,7 @@
 #
 
 
-## This function builds a plot depicting Brown Trout model data
+### This function builds a plot depicting Brown Trout model data
 BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   
   
@@ -75,3 +75,8 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   return(TDPlot)
 }
 
+
+### This function builds a plot depicting Brown Trout model data
+RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
+  
+}
