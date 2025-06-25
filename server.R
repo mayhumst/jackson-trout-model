@@ -21,19 +21,23 @@ server <- function(input, output) {
     SpringYear <- as.integer(input$Year)
     
     ## Display plot - old years
-    BT_graph(get_year_data(SpringYear),
+    show_graph(Species, 
+               get_year_data(SpringYear),
                get_year_dates(SpringYear, Species))
   })
   
   ## Render plot title for old years
   output$OldYearsPlotTitle <- renderText({
     
-    ## Get year range to add to the plot title
+    ## Get variables from inputs
+    Species <- input$Species
     SpringYear <- as.integer(input$Year)
+    
+    ## Get year range to add to the plot title
     YearRange <- paste(toString(SpringYear-1), "-", toString(SpringYear), sep="")
     
     ## Concatenate the full title
-    paste("<h4>", YearRange, "Brown Trout Spawn, Hatch, and Emergence</h4>")
+    paste("<h4>", YearRange, Species, "Trout Spawn, Hatch, and Emergence</h4>")
     
   })
   
@@ -76,7 +80,8 @@ server <- function(input, output) {
     SpringYear <- curr_water_year
     
     ## Display plot - old years
-    BT_graph(get_year_data(SpringYear),
+    show_graph(Species, 
+               get_year_data(SpringYear),
                get_year_dates(SpringYear, Species))
   })
   

@@ -31,6 +31,9 @@ get_year_dates <- function(year, species) {
   ## Read the correct CSV file of critical dates and return one year's dates
   
   if(species == "Brown") {
+    
+    ## Return Brown Trout critical dates
+    
     filename <- "data/BT_Critical_Dates.csv"
     dates <- read.csv(filename, 
                          colClasses = c("integer", "Date", "Date", "Date", "Date", 
@@ -40,6 +43,16 @@ get_year_dates <- function(year, species) {
     return(correct_row)
     
   } else if(species == "Rainbow") {
+    
+    ## Return Rainbow Trout critical dates
+    
+    filename <- "data/RT_Critical_Dates.csv"
+    dates <- read.csv(filename, 
+                      colClasses = c("integer", "integer", "Date", "Date", "Date", "integer", 
+                                     "Date", "Date", "Date"))
+    correct_row <- dates %>%
+      filter(Year == year)
+    return(correct_row)
     
   } else {
     return(NULL)
@@ -54,6 +67,7 @@ get_all_dates <- function(species) {
   ## Read the correct CSV file of critical dates and return all dates
   
   if(species == "Brown") {
+    ## Return Brown Trout critical dates
     filename <- "data/BT_Critical_Dates.csv"
     dates <- read.csv(filename, 
                       colClasses = c("integer", "Date", "Date", "Date", "Date", 
@@ -61,6 +75,12 @@ get_all_dates <- function(species) {
     return(dates)
     
   } else if(species == "Rainbow") {
+    ## Return Rainbow Trout critical dates
+    filename <- "data/RT_Critical_Dates.csv"
+    dates <- read.csv(filename, 
+                      colClasses = c("integer", "integer", "Date", "Date", "Date", "integer", 
+                                     "Date", "Date", "Date"))
+    return(dates)
     
   } else {
     return(NULL)

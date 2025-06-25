@@ -79,4 +79,116 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
 ### This function builds a plot depicting Brown Trout model data
 RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   
+  print(3)
+  ## Scale the discharge
+  coeff <- 7000/20
+  This_Year_Temps$scaled_dis <- This_Year_Temps$maxD/coeff
+  x1 <- min(This_Year_Temps$Date, na.rm=TRUE)
+  x2 <- max(This_Year_Temps$Date, na.rm=TRUE)
+  print(4)
+  print(This_Year_Crit_Dates)
+  ## Get key dates
+  NoWinSpawn <- paste(toString(This_Year_Crit_Dates$Year[1] - 1), "-12-14", sep="")
+  NoWinSpawn <- as.Date(NoWinSpawn)
+  SpringSpawnAvg <- This_Year_Crit_Dates$SprSpawn[1]
+  Z_hatch_Spr_date <- This_Year_Crit_Dates$SprHatch[1]
+  emergence_Spr_date <- This_Year_Crit_Dates$SprEmerg[1]
+  WinSpawnAvg <- This_Year_Crit_Dates$WinSpawn[1]
+  Z_hatch_Win_date <- This_Year_Crit_Dates$WinHatch[1]
+  emergence_Win_date <- This_Year_Crit_Dates$WinEmerg[1]
+  print(5)
+  
+  ## Plotting for years with no winter spawn.
+  if(is.na(This_Year_Crit_Dates$WinSpawnLen[1])) {
+    TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date)) +
+      geom_line( aes(y=MeanT), linewidth=1, color="blue") +
+      geom_line( aes(y=scaled_dis), linewidth=0.5, color="black") +
+      annotate(geom="text", x=NoWinSpawn, y=18, label="No Winter Spawn",
+               color="darkred", angle=90) +
+      geom_vline(xintercept=SpringSpawnAvg, linetype="dashed", 
+                 color = "green", linewidth=0.5) +
+      geom_vline(xintercept=Z_hatch_Spr_date, linetype="dashed", 
+                 color = "green", linewidth=0.5) +
+      geom_vline(xintercept=emergence_Spr_date, linetype="dashed", 
+                 color = "green", linewidth=0.5) +
+      annotate(geom="text", x=SpringSpawnAvg+4, y=18, label="Sp Spawn Avg",
+               color="darkgreen", angle=90) +
+      annotate(geom="text", x=Z_hatch_Spr_date+2, y=18, label="Sp Hatching",
+               color="darkgreen", angle=90) +
+      annotate(geom="text", x=emergence_Spr_date+2, y=18, label="Sp Emerging",
+               color="darkgreen", angle=90) +
+      ylim(0,20) +
+      xlab("Month") +
+      scale_x_date(date_breaks="1 month", date_labels="%b", expand = c(0, 0)) +
+      scale_y_continuous(
+        
+        # Features of the first axis
+        name = "Temperature C",
+        
+        # Add a second axis and specify its features
+        sec.axis = sec_axis(~.*coeff, name="Mean Discharge cfs")
+      )
+    
+  } 
+  
+  ## Plotting for years with winter spawn.
+  else {
+    TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date)) +
+      geom_line( aes(y=MeanT), linewidth=1, color="blue") +
+      geom_line( aes(y=scaled_dis), linewidth=0.5, color="black") +
+      geom_vline(xintercept=WinSpawnAvg, linetype="dashed", 
+                 color = "red", linewidth=0.5) +
+      geom_vline(xintercept=Z_hatch_Win_date, linetype="dashed", 
+                 color = "red", linewidth=0.5) +
+      geom_vline(xintercept=emergence_Win_date, linetype="dashed", 
+                 color = "red", linewidth=0.5) +
+      annotate(geom="text", x=WinSpawnAvg+4, y=19, label="Wn Spawn Avg",
+               color="darkred", angle=90, size=3, hjust=1) +
+      annotate(geom="text", x=Z_hatch_Win_date+4, y=19, label="Wn Hatching",
+               color="darkred", angle=90, size=3, hjust=1) +
+      annotate(geom="text", x=emergence_Win_date+4, y=19, label="Wn Emerging",
+               color="darkred", angle=90, size=3, hjust=1) +
+      geom_vline(xintercept=SpringSpawnAvg, linetype="dashed", 
+                 color = "green", linewidth=0.5) +
+      geom_vline(xintercept=Z_hatch_Spr_date, linetype="dashed", 
+                 color = "green", linewidth=0.5) +
+      geom_vline(xintercept=emergence_Spr_date, linetype="dashed", 
+                 color = "green", linewidth=0.5) +
+      annotate(geom="text", x=SpringSpawnAvg+4, y=19, label="Sp Spawn Avg",
+               color="darkgreen", angle=90, size=3, hjust=1) +
+      annotate(geom="text", x=Z_hatch_Spr_date+4, y=19, label="Sp Hatching",
+               color="darkgreen", angle=90, size=3, hjust=1) +
+      annotate(geom="text", x=emergence_Spr_date+4, y=19, label="Sp Emerging",
+               color="darkgreen", angle=90, size=3, hjust=1) +
+      ylim(0,20) +
+      xlab("Month") +
+      scale_x_date(date_breaks="1 month", date_labels="%b", expand = c(0, 0)) +
+      scale_y_continuous(
+        
+        # Features of the first axis
+        name = "Temperature C",
+        
+        # Add a second axis and specify its features
+        sec.axis = sec_axis(~.*coeff, name="mean Discharge cfs")
+      )
+  }
+  
+  ## Return plot
+  return(TDPlot)
+}
+
+
+### This functions chooses which graph to display based on species input 
+show_graph <- function(species, This_Year_Temps, This_Year_Crit_Dates) {
+  
+  print(1)
+  
+  if(species == "Brown") {
+    return(BT_graph(This_Year_Temps, This_Year_Crit_Dates))
+  } else if(species == "Rainbow") {
+    print(2)
+    return(RT_graph(This_Year_Temps, This_Year_Crit_Dates))
+  } else {
+    return(NULL)
+  }
 }
