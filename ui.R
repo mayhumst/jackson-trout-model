@@ -106,7 +106,7 @@ body <- navset_pill(id = "tabs",
 ui <- page_sidebar(
   
   # App header
-  title = "My Title",
+  title = "Jackson River Trout Spawning and Emergence Predictor",
   
   # Sidebar panel for inputs
   sidebar = sidebar,
