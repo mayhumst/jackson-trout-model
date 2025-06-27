@@ -4,6 +4,7 @@
 
 ## Determine current year so our selectInput is up-to-date
 get_year_range <- function() {
+  source("./helpers/server_functions.R")
   curr_water_year <- calculate_water_year(as.Date(Sys.time(), tz = "UTC"))
   year_range <- seq(from = curr_water_year - 1, to = 2008)
   year_list <- as.list(year_range)
