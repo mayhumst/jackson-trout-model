@@ -18,11 +18,7 @@ library(forecast)
 library(readr)
 
 ## Import helper functions from other files
-source("./helpers/graph.R")
 source("./helpers/load_data.R")
-source("./helpers/model.R")
-source("./helpers/server_functions.R")
-source("./helpers/markdown_content.R")
 source("./server.R")
 source("./ui.R")
 
