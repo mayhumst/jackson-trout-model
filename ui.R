@@ -73,7 +73,6 @@ sidebar <- sidebar(
   
   tags$div(id = "footer-container-1", 
     tags$footer(id = "footer-1", 
-                "Option 1",
                 markdown(attributions))
   )
   
@@ -82,16 +81,7 @@ sidebar <- sidebar(
 
 ## UI main body
 body <- navset_pill(id = "tabs", 
-    tags$div(id = "footer-container-2", 
-             tags$footer(id = "footer-2", 
-                         "Option 2",
-                         markdown(attributions))
-    ),
-    card(
-      tags$footer(id = "footer-3", 
-                  "Option 3",
-                  markdown(attributions))
-    ),
+    ## Tab 1
     nav_panel("This Year", 
       card(
         htmlOutput(outputId = "ThisYearPlotTitle"),
@@ -101,6 +91,7 @@ body <- navset_pill(id = "tabs",
         tableOutput(outputId = "ThisYearDateTable")
       )
     ), 
+    ## Tab 2
     nav_panel("Old Years", 
       card(
         htmlOutput(outputId = "OldYearsPlotTitle"),
@@ -110,16 +101,18 @@ body <- navset_pill(id = "tabs",
         tableOutput(outputId = "OldYearDateTable")
       )
     ),
+    ## Tab 3
     nav_panel("Key Dates",
       card(
         tableOutput(outputId = "AllKeyDatesTable")
       )
     ),
-    tags$div(id = "footer-container-4", 
-             tags$footer(id = "footer-4", 
-                         "Option 4",
-                         markdown(attributions))
-    )
+    
+    ## Footer 
+    # tags$div(id = "footer-container-4", 
+    #          tags$footer(id = "footer-4", 
+    #                      markdown(attributions))
+    # )
   
 )
 

@@ -70,6 +70,8 @@ attributions <-
 Research and model by [Dr. Robert Humston,](https://www.wlu.edu/profile/humston-robert) Professor and Director of Environmental Studies at Washington and Lee University. 
 Data from [USGS Water Services](https://waterservices.usgs.gov/).
 Website and application by Maya Humston.
+
+View this model in [GitHub](https://github.com/mayhumst/jackson-trout-model)
 "
 
 description <- 
