@@ -107,6 +107,12 @@ body <- navset_pill(id = "tabs",
         tableOutput(outputId = "AllKeyDatesTable")
       )
     ),
+    ## Tab 4
+    nav_panel("Overview",
+      card(
+        markdown(description)
+      )
+    )
     
     ## Footer 
     # tags$div(id = "footer-container-4", 
