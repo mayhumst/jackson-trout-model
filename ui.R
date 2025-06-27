@@ -34,8 +34,7 @@ get_year_range <- function() {
   names(year_list) <- year_range
   return(year_list)
 }
-#source("./helpers/server_functions.R")
-unused <- get_year_data(2023)
+
 year_list <- get_year_range()
 
 

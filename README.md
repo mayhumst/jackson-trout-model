@@ -4,6 +4,9 @@ Description, brief overview
 
 ## How to Use
 
+This application is hosted at [https://0197b2f2-6547-211e-bdc6-c2196ce2a239.share.connect.posit.cloud/](https://0197b2f2-6547-211e-bdc6-c2196ce2a239.share.connect.posit.cloud/).
+
+To run the application locally instead:
 - Download or clone this repository. 
 - Ensure you have R and RStudio downloaded. 
 - In an R console, load the Shiny library: `library(shiny)`
