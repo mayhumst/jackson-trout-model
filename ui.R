@@ -2,6 +2,27 @@
 # This module defines the shiny UI that will be called to run the app.
 #
 
+## Load libraries
+library(shiny)
+library(bslib)
+library(dataRetrieval)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(zoo)
+library(forecast)
+library(readr)
+
+## Import helper functions from other files
+source("./helpers/graph.R")
+source("./helpers/load_data.R")
+source("./helpers/model.R")
+source("./helpers/server_functions.R")
+source("./helpers/markdown_content.R")
+source("./server.R")
+source("./ui.R")
+
 ## Determine current year so our selectInput is up-to-date
 get_year_range <- function() {
   
@@ -18,7 +39,7 @@ get_year_range <- function() {
   names(year_list) <- year_range
   return(year_list)
 }
-source("./helpers/server_functions.R")
+#source("./helpers/server_functions.R")
 unused <- get_year_data(2023)
 year_list <- get_year_range()
 

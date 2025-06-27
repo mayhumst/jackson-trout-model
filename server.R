@@ -1,8 +1,26 @@
 #
 # This module defines the shiny server function that will be called to run the app.
 #
+## Load libraries
+library(shiny)
+library(bslib)
+library(dataRetrieval)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(zoo)
+library(forecast)
+library(readr)
 
-
+## Import helper functions from other files
+source("./helpers/graph.R")
+source("./helpers/load_data.R")
+source("./helpers/model.R")
+source("./helpers/server_functions.R")
+source("./helpers/markdown_content.R")
+source("./server.R")
+source("./ui.R")
 
 ### Define app server 
 server <- function(input, output) {
