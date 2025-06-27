@@ -55,7 +55,7 @@
 
 
 
-attributions <- 
+attributions_alternative <- 
 "
 **Attributions:**
 Research and model by [Dr. Robert Humston,](https://www.wlu.edu/profile/humston-robert) Professor and Director of Environmental Studies at Washington and Lee University 
@@ -63,6 +63,13 @@ Research and model by [Dr. Robert Humston,](https://www.wlu.edu/profile/humston-
 Data from [USGS Water Services](https://waterservices.usgs.gov/)
 
 Website and application by Maya Humston
+"
+
+attributions <- 
+"
+Research and model by [Dr. Robert Humston,](https://www.wlu.edu/profile/humston-robert) Professor and Director of Environmental Studies at Washington and Lee University. 
+Data from [USGS Water Services](https://waterservices.usgs.gov/).
+Website and application by Maya Humston.
 "
 
 description <- 

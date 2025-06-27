@@ -23,6 +23,7 @@ year_list <- get_year_range()
 
 ## UI sidebar component
 sidebar <- sidebar(
+  width = 250,
   
   ## Sidebar input when on "This Year" tab
   conditionalPanel(condition = "input.tabs == 'This Year'", 
@@ -68,12 +69,29 @@ sidebar <- sidebar(
                      "Rainbow Trout" = "Rainbow"
       )
     )
+  ), 
+  
+  tags$div(id = "footer-container-1", 
+    tags$footer(id = "footer-1", 
+                "Option 1",
+                markdown(attributions))
   )
+  
 )
 
 
 ## UI main body
 body <- navset_pill(id = "tabs", 
+    tags$div(id = "footer-container-2", 
+             tags$footer(id = "footer-2", 
+                         "Option 2",
+                         markdown(attributions))
+    ),
+    card(
+      tags$footer(id = "footer-3", 
+                  "Option 3",
+                  markdown(attributions))
+    ),
     nav_panel("This Year", 
       card(
         htmlOutput(outputId = "ThisYearPlotTitle"),
@@ -96,6 +114,11 @@ body <- navset_pill(id = "tabs",
       card(
         tableOutput(outputId = "AllKeyDatesTable")
       )
+    ),
+    tags$div(id = "footer-container-4", 
+             tags$footer(id = "footer-4", 
+                         "Option 4",
+                         markdown(attributions))
     )
   
 )
@@ -104,6 +127,7 @@ body <- navset_pill(id = "tabs",
 
 ## Define user interface
 ui <- page_sidebar(
+  includeCSS("www/style.css"),
   
   # App header
   title = "Jackson River Trout Spawning and Emergence Predictor",

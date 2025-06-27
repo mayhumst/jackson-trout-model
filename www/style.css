@@ -1,0 +1,13 @@
+
+/* Styles for the footer elements used for attributions */
+#footer-container-1 {
+    position: absolute;
+    bottom: 30px;
+    width: 210px;
+} 
+#footer-1 {
+    font-size: 12px;
+}
+#footer-2, #footer-3, #footer-4 {
+    font-size: 12px;
+}
