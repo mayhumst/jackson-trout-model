@@ -7,10 +7,9 @@
 ### This function builds a plot depicting Brown Trout model data
 BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   
-  
   ## Scale the discharge information to the same scale/Y-axis as temperature
   
-  coeff <- max(This_Year_Temps$maxD, na.rm=TRUE)/20
+  coeff <- 6000/20
   This_Year_Temps$scaled_dis <- This_Year_Temps$maxD/coeff
   x1 <- min(This_Year_Temps$Date, na.rm=TRUE)
   x2 <- max(This_Year_Temps$Date, na.rm=TRUE)
@@ -27,30 +26,16 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   
   ## Build graph
   
+  # Plot temperature and max daily discharge
   TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date)) +
     geom_line( aes(y=MeanT), linewidth=1, color="blue") +
-    geom_line( aes(y=scaled_dis), linewidth=0.5, color="black") +
+    geom_line( aes(y=scaled_dis), linewidth=0.5, color="black") 
+  
+  # show spawn window
+  TDPlot <- TDPlot +
     annotate('rect', xmin=FSp_Start, xmax=FSp_End, ymin=6, ymax=8, alpha=.2, fill='red') +
     annotate('rect', xmin=FSp_Start, xmax=FSp_End, ymin=8, ymax=10, alpha=.2, fill='green') +
     annotate('rect', xmin=FSp_Start, xmax=FSp_End, ymin=10, ymax=12, alpha=.2, fill='red') +
-    annotate('rect', xmin=EH_hatch_start_date,
-             xmax=EH_hatch_peak_date, ymin=0, ymax=Inf,
-             alpha = .2, fill="red") +
-    annotate('rect', xmin=EH_hatch_peak_date,
-             xmax=EH_hatch_peak_date+7, ymin=0, ymax=Inf,
-             alpha = .2, fill="green") +
-    annotate('rect', xmin=emergence_start_date,
-             xmax=emergence_peak_date, ymin=0, ymax=Inf,
-             alpha = .2, fill="red") +
-    annotate('rect', xmin=emergence_peak_date,
-             xmax=emergence_peak_date+7, ymin=0, ymax=Inf,
-             alpha = .2, fill="green") +
-    annotate(geom="text", x=EH_hatch_start_date, y=15, label="Hatching",
-             color="darkred", angle=90) +
-    annotate(geom="text", x=emergence_start_date, y=15, label="Emerging",
-             color="darkgreen", angle=90) +
-    ylim(0,20) +
-    xlab("Month") +
     geom_vline(xintercept=FSp_Start, linetype="dashed", 
                color = "red", linewidth=0.5) +
     annotate(geom="text", x=FSp_Start+4, y=18, label="Spn Start",
@@ -58,18 +43,48 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
     annotate(geom="text", x=FSp_Peak+4, y=18, label="Spn Peak",
              color="darkgreen", angle=90) +
     geom_vline(xintercept=FSp_Peak, linetype="dashed", 
-               color = "green", linewidth=0.5) +
-    #  geom_vline(xintercept=Z_hatch_start_date, linetype="dashed", 
-    #            color = "blue", linewidth=0.5) +
-    #ggtitle(plot_title) +
+               color = "green", linewidth=0.5)
+  
+  # show hatch window
+  TDPlot <- TDPlot +
+    annotate('rect', xmin=EH_hatch_start_date,
+             xmax=EH_hatch_peak_date, ymin=0, ymax=Inf,
+             alpha = .2, fill="red") +
+    annotate('rect', xmin=EH_hatch_peak_date,
+             xmax=EH_hatch_peak_date+7, ymin=0, ymax=Inf,
+             alpha = .2, fill="green") +
+    annotate(geom="text", x=EH_hatch_start_date, y=15, label="Hatching",
+             color="darkred", angle=90)
+  
+  # show emergence window
+  TDPlot <- TDPlot +
+    annotate('rect', xmin=emergence_start_date,
+             xmax=emergence_peak_date, ymin=0, ymax=Inf,
+             alpha = .2, fill="red") +
+    annotate('rect', xmin=emergence_peak_date,
+             xmax=emergence_peak_date+7, ymin=0, ymax=Inf,
+             alpha = .2, fill="green") +
+    annotate(geom="text", x=emergence_start_date, y=15, label="Emerging",
+             color="darkgreen", angle=90) 
+  
+  # add second axis, label all axes
+  TDPlot <- TDPlot +
+    ylim(0,25) +
+    #expand_limits(x = 0, y = 0) +
+    xlab("Month") +
     scale_x_date(date_breaks="1 month", date_labels="%b", expand = c(0, 0)) +
     scale_y_continuous(
-      
-      # Features of the first axis
-      name = "Temperature C",
-      
-      # Add a second axis and specify its features
-      sec.axis = sec_axis(~.*coeff, name="max Discharge cfs")
+      expand = c(0, 0),
+      name = "Temperature (C°)",
+      sec.axis = sec_axis(~.*coeff, name="Max Daily Discharge (cfs)")
+    )
+    
+  # adjust aesthetics
+  TDPlot <- TDPlot +
+    theme_bw() +
+    theme(
+      axis.title.y = element_text(color = "blue"),
+      axis.title.y.right = element_text(color = "black", size=13)
     )
   
   return(TDPlot)
@@ -79,14 +94,13 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
 ### This function builds a plot depicting Brown Trout model data
 RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   
-  print(3)
   ## Scale the discharge
-  coeff <- 7000/20
+  coeff <- 6000/20
   This_Year_Temps$scaled_dis <- This_Year_Temps$maxD/coeff
   x1 <- min(This_Year_Temps$Date, na.rm=TRUE)
   x2 <- max(This_Year_Temps$Date, na.rm=TRUE)
-  print(4)
   print(This_Year_Crit_Dates)
+  
   ## Get key dates
   NoWinSpawn <- paste(toString(This_Year_Crit_Dates$Year[1] - 1), "-12-14", sep="")
   NoWinSpawn <- as.Date(NoWinSpawn)
@@ -96,8 +110,7 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   WinSpawnAvg <- This_Year_Crit_Dates$WinSpawn[1]
   Z_hatch_Win_date <- This_Year_Crit_Dates$WinHatch[1]
   emergence_Win_date <- This_Year_Crit_Dates$WinEmerg[1]
-  print(5)
-  
+
   ## Plotting for years with no winter spawn.
   if(is.na(This_Year_Crit_Dates$WinSpawnLen[1])) {
     TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date)) +
@@ -117,16 +130,16 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
                color="darkgreen", angle=90) +
       annotate(geom="text", x=emergence_Spr_date+2, y=18, label="Sp Emerging",
                color="darkgreen", angle=90) +
-      ylim(0,20) +
+      ylim(0,25) +
       xlab("Month") +
       scale_x_date(date_breaks="1 month", date_labels="%b", expand = c(0, 0)) +
       scale_y_continuous(
         
         # Features of the first axis
-        name = "Temperature C",
+        name = "Temperature (C°)",
         
         # Add a second axis and specify its features
-        sec.axis = sec_axis(~.*coeff, name="Mean Discharge cfs")
+        sec.axis = sec_axis(~.*coeff, name="Max Daily Discharge (cfs)")
       )
     
   } 
@@ -160,13 +173,13 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
                color="darkgreen", angle=90, size=3, hjust=1) +
       annotate(geom="text", x=emergence_Spr_date+4, y=19, label="Sp Emerging",
                color="darkgreen", angle=90, size=3, hjust=1) +
-      ylim(0,20) +
+      ylim(0,25) +
       xlab("Month") +
       scale_x_date(date_breaks="1 month", date_labels="%b", expand = c(0, 0)) +
       scale_y_continuous(
         
         # Features of the first axis
-        name = "Temperature C",
+        name = "Temperature (C°)",
         
         # Add a second axis and specify its features
         sec.axis = sec_axis(~.*coeff, name="mean Discharge cfs")
@@ -181,8 +194,7 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
 ### This functions chooses which graph to display based on species input 
 show_graph <- function(species, This_Year_Temps, This_Year_Crit_Dates) {
   
-  print(1)
-  
+
   if(species == "Brown") {
     return(BT_graph(This_Year_Temps, This_Year_Crit_Dates))
   } else if(species == "Rainbow") {
