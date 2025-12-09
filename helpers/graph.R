@@ -238,3 +238,56 @@ show_graph <- function(species, This_Year_Temps, This_Year_Crit_Dates) {
   }
 }
 
+
+### This function builds a text summary of the graph elements 
+show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_Dates) {
+  
+  today_date <- as.Date(Sys.time(), tz = "America/New_York")
+  
+  if(current_year == TRUE) {
+    if(species == "Brown") {
+      
+      print(111)
+      
+      ## Check if currently in ideal water temperature range
+      
+      ret <- "<p>Today's water temperature is "
+      if(
+        This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] > 6 && 
+        This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] < 12
+        ) {
+            
+          ret <- paste(ret, "<span style='color:red;'>within</span> the ideal temperature range for <b>Brown Trout.</b>", sep="")
+      }
+      else {
+        ret <- paste(ret, "<span style='color:green;'>not within</span> the ideal temperature range for <b>Brown Trout.</b>", sep="")
+      }
+      
+      print(222)
+      
+      ## Check if within spawn window
+      
+      #FSp_Start <- This_Year_Crit_Dates$SpawnStart[[1]]
+      #FSp_Peak <- This_Year_Crit_Dates$SpawnPeak[[1]]
+      #FSp_End <- This_Year_Crit_Dates$SpawnEnd[[1]]
+      #EH_hatch_start_date <- This_Year_Crit_Dates$HaStart[[1]]
+      #EH_hatch_peak_date <- This_Year_Crit_Dates$HaPeak[[1]]
+      #emergence_start_date <- This_Year_Crit_Dates$EmStart[[1]]
+      #emergence_peak_date <- This_Year_Crit_Dates$EmPeak[[1]]
+      
+      if(
+        This_Year_Crit_Dates$SpawnStart[[1]] >= today_date &&
+        This_Year_Crit_Dates$SpawnEnd[[1]] <= today_date
+         ) {
+        ret <- paste(ret, " Today's date is <span>within</span> the predicted spawn window.", sep="")
+      }
+      else {
+        ret <- paste(ret, " Today's date is <span>not within</span> the predicted spawn window.", sep="")
+      }
+      
+      print(333)
+      ret <- paste(ret, "</p>", sep="")
+      return (ret)
+    }
+  }
+}
