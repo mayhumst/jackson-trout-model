@@ -24,68 +24,103 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   emergence_start_date <- This_Year_Crit_Dates$EmStart[[1]]
   emergence_peak_date <- This_Year_Crit_Dates$EmPeak[[1]]
   
+  ## DELETE all interpolated temp values after today's date
+  
+  today_date <- as.Date(Sys.time(), tz = "America/New_York")
+  for(i in 1:nrow(This_Year_Temps)) {
+    if (This_Year_Temps$Date[[i]] > today_date) {
+      This_Year_Temps$meanT.y[[i]] <- NA
+      This_Year_Temps$meanT.x[[i]] <- NA
+      This_Year_Temps$MeanT[[i]] <- NA
+    }
+  }
+  
   ## Build graph
   
   # Plot temperature and max daily discharge
   TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date)) +
-    geom_line( aes(y=MeanT), linewidth=1, color="blue") +
-    geom_line( aes(y=scaled_dis), linewidth=0.5, color="black") 
+    geom_line( aes(y=MeanT, color = "Line1"), linewidth=1) +
+    geom_line( aes(y=scaled_dis, color = "Line2"), linewidth=0.5) 
+  
+  # show ideal temperature window 
+  TDPlot <- TDPlot +
+    annotate('rect', xmin=This_Year_Temps$Date[[1]], xmax=This_Year_Temps$Date[[nrow(This_Year_Temps)]], ymin=6, ymax=12, alpha=.2, fill='green') +
+    annotate(geom="text", x=emergence_peak_date+50, y=11, label="Ideal Temperature Range",
+             color="darkgreen", angle=0, size = 6)
   
   # show spawn window
   TDPlot <- TDPlot +
-    annotate('rect', xmin=FSp_Start, xmax=FSp_End, ymin=6, ymax=8, alpha=.2, fill='red') +
-    annotate('rect', xmin=FSp_Start, xmax=FSp_End, ymin=8, ymax=10, alpha=.2, fill='green') +
-    annotate('rect', xmin=FSp_Start, xmax=FSp_End, ymin=10, ymax=12, alpha=.2, fill='red') +
-    geom_vline(xintercept=FSp_Start, linetype="dashed", 
-               color = "red", linewidth=0.5) +
-    annotate(geom="text", x=FSp_Start+4, y=18, label="Spn Start",
-             color="darkred", angle=90) +
-    annotate(geom="text", x=FSp_Peak+4, y=18, label="Spn Peak",
-             color="darkgreen", angle=90) +
-    geom_vline(xintercept=FSp_Peak, linetype="dashed", 
-               color = "green", linewidth=0.5)
+    annotate('rect', xmin=FSp_Start,
+             xmax=FSp_End, ymin=0, ymax=Inf,
+             alpha = .2, fill="red") +
+    annotate(geom="text", x=FSp_Start, y=20, label="Predicted \nSpawn \nWindow",
+             color="darkred", angle=0) 
   
   # show hatch window
   TDPlot <- TDPlot +
     annotate('rect', xmin=EH_hatch_start_date,
-             xmax=EH_hatch_peak_date, ymin=0, ymax=Inf,
-             alpha = .2, fill="red") +
-    annotate('rect', xmin=EH_hatch_peak_date,
              xmax=EH_hatch_peak_date+7, ymin=0, ymax=Inf,
-             alpha = .2, fill="green") +
-    annotate(geom="text", x=EH_hatch_start_date, y=15, label="Hatching",
-             color="darkred", angle=90)
+             alpha = .2, fill="red") +
+    annotate(geom="text", x=EH_hatch_start_date, y=20, label="Predicted \nHatch \nWindow",
+             color="darkred", angle=0)
   
   # show emergence window
   TDPlot <- TDPlot +
     annotate('rect', xmin=emergence_start_date,
-             xmax=emergence_peak_date, ymin=0, ymax=Inf,
-             alpha = .2, fill="red") +
-    annotate('rect', xmin=emergence_peak_date,
              xmax=emergence_peak_date+7, ymin=0, ymax=Inf,
-             alpha = .2, fill="green") +
-    annotate(geom="text", x=emergence_start_date, y=15, label="Emerging",
-             color="darkgreen", angle=90) 
+             alpha = .2, fill="red") +
+    annotate(geom="text", x=emergence_start_date, y=20, label="Predicted \nEmergence \nWindow",
+             color="darkred", angle=0) 
   
   # add second axis, label all axes
   TDPlot <- TDPlot +
-    ylim(0,25) +
-    #expand_limits(x = 0, y = 0) +
     xlab("Month") +
     scale_x_date(date_breaks="1 month", date_labels="%b", expand = c(0, 0)) +
     scale_y_continuous(
       expand = c(0, 0),
+      limits = c(0, 22),
+      breaks=c(0,5, 10, 15, 20),
       name = "Temperature (C°)",
-      sec.axis = sec_axis(~.*coeff, name="Max Daily Discharge (cfs)")
+      # Second axis
+      sec.axis = sec_axis(~.*coeff, 
+                          name="Max Daily Discharge (cfs)",
+                          breaks=c(0,1500, 3000, 4500, 6000))
     )
     
-  # adjust aesthetics
+  # adjust aesthetics - axis labels, ticks, colors, size ; add today's date
   TDPlot <- TDPlot +
     theme_bw() +
     theme(
+      axis.text = element_text(size = 13),
+      axis.title = element_text(size = 14),
       axis.title.y = element_text(color = "blue"),
-      axis.title.y.right = element_text(color = "black", size=13)
-    )
+      axis.text.y = element_text(colour = "blue"),
+      axis.title.y.right = element_text(color = "black"),
+      axis.text.y.right = element_text(color = "black"),
+    ) + 
+    geom_vline(aes(xintercept = today_date, color = "Line3"), linetype="dashed", 
+               linewidth=0.5)
+  
+  temp_data = data.frame(Date = today_date, MeanT = 10)
+  print(temp_data)
+  
+  # Legend
+  TDPlot <- TDPlot +
+    # Real legend elements corresponding with temp, discharge, and today's date
+    scale_color_manual(
+      values = c("blue", "darkgray", "black"),
+      labels = c("Temperature", "Discharge", "Today's Date")
+    ) +
+    # CHEAT/HARDCODED legend elements
+    geom_col(aes(y = numeric(nrow(This_Year_Temps)), fill = "Spawn"), alpha = .2) + 
+    geom_col(aes(y = numeric(nrow(This_Year_Temps)), fill = "Hatch"), alpha = .2) + 
+    geom_col(aes(y = numeric(nrow(This_Year_Temps)), fill = "Emergence"), alpha = .2) + 
+    geom_col(aes(y = numeric(nrow(This_Year_Temps)), fill = "Temp"), alpha = .2) + 
+    scale_fill_manual(
+      values = c("red", "red", "red", "green"),
+      labels = c("Predicted Spawn Window", "Predicted Hatch Window", "Predicted Emergence Window", "Ideal Temperature Range")
+    ) + 
+    theme(legend.title = element_blank())
   
   return(TDPlot)
 }
@@ -191,16 +226,15 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
 }
 
 
-### This functions chooses which graph to display based on species input 
+### This function chooses which graph to display based on species input 
 show_graph <- function(species, This_Year_Temps, This_Year_Crit_Dates) {
   
-
   if(species == "Brown") {
     return(BT_graph(This_Year_Temps, This_Year_Crit_Dates))
   } else if(species == "Rainbow") {
-    print(2)
     return(RT_graph(This_Year_Temps, This_Year_Crit_Dates))
   } else {
     return(NULL)
   }
 }
+
