@@ -3,26 +3,28 @@
 ### Query USGS for necessary data; interpolate and clean data, then return. 
 get_USGS <- function(WTP, GD, TD, TC, Temp, Dis, FallStart, SpringEnd, StDate, EndDate) {
   
-  ## Download continuous water data from USGS servers
+  ## Download continuous water data from USGS servers from two water stations
   
   GD_Data <- readNWISuv(GD, TD, startDate = FallStart, 
                         endDate = SpringEnd, tz="America/New_York")
   WTP_Data <- readNWISuv(WTP, TC, startDate = FallStart, 
                          endDate = SpringEnd, tz="America/New_York")
   
+  ## Reformat data for water station 1; 
+  ##      calculate daily mean temp from quarter-hourly temp; 
+  ##      get max discharge from full day's record; 
+  ##      add entries for missing dates
+  
   GD_Data$Date <- as.Date(GD_Data$dateTime)
   GD_mean <- ddply(GD_Data,c("Date"), summarise,
                    meanT = mean(X_00010_00000, na.rm=TRUE),
                    maxD = max(X_00060_00000, na.rm=TRUE))
-  
   GD_mean <- complete(GD_mean, Date=seq.Date(StDate, EndDate, by="1 day"))
   
-  ## Interpolate to fill missing values in daily temperature data
-  
-  x <- zoo(GD_mean$meanT,GD_mean$Date)
-  x <- as.ts(x)
-  x <- na.interp(x)
-  GD_mean$meanT <- x
+  ## Reformat data for water station 2; 
+  ##      calculate daily mean temp from quarter-hourly temp; 
+  ##      max discharge from full day's record;
+  ##      add entries for missing dates
   
   WTP_Data$Date <- as.Date(WTP_Data$dateTime)
   WTP_mean <- ddply(WTP_Data,c("Date"), summarise,
@@ -30,7 +32,14 @@ get_USGS <- function(WTP, GD, TD, TC, Temp, Dis, FallStart, SpringEnd, StDate, E
   
   WTP_mean <- complete(WTP_mean, Date=seq.Date(StDate, EndDate, by="1 day"))
   
-  ## Interpolate to fill missing values in daily temperature data
+  ## Interpolate to fill missing values in daily temperature data for station 1
+  
+  x <- zoo(GD_mean$meanT,GD_mean$Date)
+  x <- as.ts(x)
+  x <- na.interp(x)
+  GD_mean$meanT <- x
+  
+  ## Interpolate to fill missing values in daily temperature data for station 2
   
   x <- zoo(WTP_mean$meanT,WTP_mean$Date)
   x <- as.ts(x)
@@ -45,6 +54,21 @@ get_USGS <- function(WTP, GD, TD, TC, Temp, Dis, FallStart, SpringEnd, StDate, E
   Temps$Year <- format(Temps$Date,'%Y')
   
   Temps$MeanT <- rowMeans(cbind(Temps$meanT.x, Temps$meanT.y), na.rm = TRUE)
+  
+  ## DELETE all interpolated temp values after today's date IF this year's data is the current water year
+  
+  today_date <- as.Date(Sys.time(), tz = "America/New_York")
+  for(i in 1:nrow(Temps)) {
+    if (Temps$Date[[i]] > today_date) {
+      print("xxxx")
+      Temps$meanT.y[[i]] <- NA
+      Temps$meanT.x[[i]] <- NA
+      Temps$MeanT[[i]] <- NA
+    }
+    else {
+      print("yyyy")
+    }
+  }
   
   
   return(Temps)
