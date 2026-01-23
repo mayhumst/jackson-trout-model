@@ -97,7 +97,7 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
       axis.text.y.right = element_text(color = "black"),
     ) 
   
-  # Today's date
+  # Today's date (replace year with correct historical year when necessary)
   if(today_date %in% This_Year_Temps$Date) {
     TDPlot <- TDPlot +
       geom_vline(aes(xintercept = today_date, color = "Line3"), linetype="dashed", 
@@ -118,7 +118,7 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
     # Real legend elements corresponding with temp, discharge, and today's date
     scale_color_manual(
       values = c("blue", "darkgray", "black"),
-      labels = c("Temperature", "Discharge", "Today's Date")
+      labels = c("Temperature", "Discharge", "Current month/day")
     ) +
     # CHEAT/HARDCODED legend elements
     geom_col(aes(y = numeric(nrow(This_Year_Temps)), fill = "Spawn"), alpha = .6) + 
@@ -255,7 +255,7 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
       axis.text.y.right = element_text(color = "black"),
     ) 
   
-  # Today's date
+  # Today's date (replace year with correct historical year when necessary)
   if(today_date %in% This_Year_Temps$Date) {
     TDPlot <- TDPlot +
       geom_vline(aes(xintercept = today_date, color = "Line3"), linetype="dashed", 
@@ -276,7 +276,7 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
     # Real legend elements corresponding with temp, discharge, and today's date
     scale_color_manual(
       values = c("blue", "darkgray", "black"),
-      labels = c("Temperature", "Discharge", "Today's Date")
+      labels = c("Temperature", "Discharge", "Current month/day")
     ) +
     # CHEAT/HARDCODED legend elements
     geom_col(aes(y = numeric(nrow(This_Year_Temps)), fill = "Spawn"), alpha = .6) + 
