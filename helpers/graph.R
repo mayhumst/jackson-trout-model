@@ -173,9 +173,9 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   # show spawn window
   TDPlot <- TDPlot +
     annotate('rect', xmin=SprSpawnAvg,
-             xmax=SprSpawnAvg+SprSpawnLen, ymin=0, ymax=Inf,
+             xmax=SprSpawnAvg+SprSpawnLen, ymin=11, ymax=Inf,
              alpha = .6, fill="#2c7fb8") +
-    annotate(geom="text", x=SprSpawnAvg, y=20, label="Spawn",
+    annotate(geom="text", x=SprSpawnAvg, y=21, label="Spawn",
              color="black", angle=0) 
   if(is.na(This_Year_Crit_Dates$WinSpawnLen[1])) {
     TDPlot <- TDPlot +
@@ -184,9 +184,9 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   } else {
     TDPlot <- TDPlot +
     annotate('rect', xmin=WinSpawnAvg,
-             xmax=WinSpawnAvg+WinSpawnLen, ymin=0, ymax=Inf,
+             xmax=WinSpawnAvg+WinSpawnLen, ymin=0, ymax=11,
              alpha = .6, fill="#2c7fb8") +
-    annotate(geom="text", x=WinSpawnAvg, y=20, label="Spawn",
+    annotate(geom="text", x=WinSpawnAvg, y=3, label="Spawn",
              color="black", angle=0) 
   }
   
@@ -194,32 +194,32 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   # show hatch window
   TDPlot <- TDPlot +
     annotate('rect', xmin=Z_hatch_Spr_date,
-             xmax=Z_hatch_Spr_date+20, ymin=0, ymax=Inf,
+             xmax=Z_hatch_Spr_date+20, ymin=11, ymax=Inf,
              alpha = .7, fill="#7fcdbb") +
     annotate(geom="text", x=Z_hatch_Spr_date, y=20, label="Hatch",
              color="black", angle=0)
   if(is.na(This_Year_Crit_Dates$WinSpawnLen[1]) == FALSE) {
     TDPlot <- TDPlot +
       annotate('rect', xmin=Z_hatch_Win_date,
-            xmax=Z_hatch_Win_date+20, ymin=0, ymax=Inf,
+            xmax=Z_hatch_Win_date+20, ymin=0, ymax=11,
              alpha = .7, fill="#7fcdbb") +
-      annotate(geom="text", x=Z_hatch_Win_date, y=20, label="Hatch",
+      annotate(geom="text", x=Z_hatch_Win_date, y=2, label="Hatch",
                color="black", angle=0)
   }
   
   # show emergence window
   TDPlot <- TDPlot +
     annotate('rect', xmin=emergence_Spr_date,
-             xmax=emergence_Spr_date+20, ymin=0, ymax=Inf,
+             xmax=emergence_Spr_date+20, ymin=11, ymax=Inf,
              alpha = .7, fill="#edf8b1") +
-    annotate(geom="text", x=emergence_Spr_date, y=20, label="Emergence",
+    annotate(geom="text", x=emergence_Spr_date, y=19, label="Emergence",
              color="black", angle=0) 
   if(is.na(This_Year_Crit_Dates$WinSpawnLen[1]) == FALSE) {
     TDPlot <- TDPlot +
       annotate('rect', xmin=emergence_Win_date,
-               xmax=emergence_Win_date+20, ymin=0, ymax=Inf,
+               xmax=emergence_Win_date+20, ymin=0, ymax=11,
                alpha = .7, fill="#edf8b1") +
-      annotate(geom="text", x=emergence_Win_date, y=20, label="Emergence",
+      annotate(geom="text", x=emergence_Win_date, y=1, label="Emergence",
                color="black", angle=0) 
   }
   
