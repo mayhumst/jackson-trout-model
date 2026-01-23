@@ -95,6 +95,20 @@ server <- function(input, output) {
     
   })
   
+  ## Render plot summary for current year
+  output$CurrentYearSummary <- renderText({
+    
+    ## Get variables from inputs
+    Species <- input$Species_ThisYear
+    SpringYear <- curr_water_year
+    
+    ## Get graph summary
+    show_summary(TRUE, Species, 
+               get_year_data(SpringYear),
+               get_year_dates(SpringYear, Species))
+    
+  })
+  
   ## Render key dates for this year only
   output$CurrentYearDateTable <- renderTable({
     
