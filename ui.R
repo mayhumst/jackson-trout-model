@@ -105,6 +105,9 @@ body <- navset_pill(id = "tabs",
         plotOutput(outputId = "ThisYearPlot")
       ),
       card(
+        htmlOutput(outputId = "ThisYearSummary")
+      ),
+      card(
         tableOutput(outputId = "ThisYearDateTable")
       )
     ), 

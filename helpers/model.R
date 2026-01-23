@@ -248,13 +248,19 @@ RT_model <- function(Temps, this_year) {
   
   ##  Calculate emergence dates for winter spawned embryos.
   
-  EmSpr <- subset(Temps, Date > Z_hatch_Spr_date)
-  EmSpr$dmatZ <- 0.0056*EmSpr$MeanT-0.0045
-  EmSpr$pmatZ <- cumsum(EmSpr$dmatZ)
+  if(length(Z_hatch_Spr_date) > 0) {
+    EmSpr <- subset(Temps, Date > Z_hatch_Spr_date)
+    EmSpr$dmatZ <- 0.0056*EmSpr$MeanT-0.0045
+    EmSpr$pmatZ <- cumsum(EmSpr$dmatZ)
+    
+    threshold <- 1
+    first_exceed_index <- which.max(EmSpr$pmatZ > threshold)
+    emergence_Spr_date <- EmSpr$Date[first_exceed_index]
+  }
+  else {
+    emergence_Spr_date <- NA
+  }
   
-  threshold <- 1
-  first_exceed_index <- which.max(EmSpr$pmatZ > threshold)
-  emergence_Spr_date <- EmSpr$Date[first_exceed_index]
   
   
   ## Critical dates such as spawning start, peak spawn, etc. are appended to matrix
