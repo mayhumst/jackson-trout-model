@@ -42,8 +42,8 @@ year_list <- get_year_range()
 sidebar <- sidebar(
   width = 250,
   
-  ## Sidebar input when on "This Year" tab
-  conditionalPanel(condition = "input.tabs == 'This Year'", 
+  ## Sidebar input when on "Current Year" tab
+  conditionalPanel(condition = "input.tabs == 'Current Year'", 
     # Input: Select species
     selectInput(
       "Species_ThisYear",
@@ -55,8 +55,8 @@ sidebar <- sidebar(
   ), 
   
   
-  ## Sidebar input when on "Old Years" tab
-  conditionalPanel(condition = "input.tabs == 'Old Years'", 
+  ## Sidebar input when on "Past Years" tab
+  conditionalPanel(condition = "input.tabs == 'Past Years'", 
                    
     # Input: Select species
     selectInput(
@@ -99,26 +99,26 @@ sidebar <- sidebar(
 ## UI main body
 body <- navset_pill(id = "tabs", 
     ## Tab 1
-    nav_panel("This Year", 
+    nav_panel("Current Year", 
       card(
-        htmlOutput(outputId = "ThisYearPlotTitle"),
-        plotOutput(outputId = "ThisYearPlot")
+        htmlOutput(outputId = "CurrentYearPlotTitle"),
+        plotOutput(outputId = "CurrentYearPlot")
       ),
       card(
-        htmlOutput(outputId = "ThisYearSummary")
+        htmlOutput(outputId = "CurrentYearSummary")
       ),
       card(
-        tableOutput(outputId = "ThisYearDateTable")
+        tableOutput(outputId = "CurrentYearDateTable")
       )
     ), 
     ## Tab 2
-    nav_panel("Old Years", 
+    nav_panel("Past Years", 
       card(
-        htmlOutput(outputId = "OldYearsPlotTitle"),
-        plotOutput(outputId = "OldYearsPlot")
+        htmlOutput(outputId = "PastYearsPlotTitle"),
+        plotOutput(outputId = "PastYearsPlot")
       ), 
       card(
-        tableOutput(outputId = "OldYearDateTable")
+        tableOutput(outputId = "PastYearDateTable")
       )
     ),
     ## Tab 3

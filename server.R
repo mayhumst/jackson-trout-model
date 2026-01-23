@@ -29,7 +29,7 @@ server <- function(input, output) {
   curr_water_year <- calculate_water_year(as.Date(Sys.time(), tz = "UTC"))
   
   ## Render plot for old years
-  output$OldYearsPlot <- renderPlot({
+  output$PastYearsPlot <- renderPlot({
     
     ## Get variables from inputs
     Species <- input$Species_OldYears
@@ -42,7 +42,7 @@ server <- function(input, output) {
   })
   
   ## Render plot title for old years
-  output$OldYearsPlotTitle <- renderText({
+  output$PastYearsPlotTitle <- renderText({
     
     ## Get variables from inputs
     Species <- input$Species_OldYears
@@ -57,7 +57,7 @@ server <- function(input, output) {
   })
   
   ## Render key dates for single (old) year
-  output$OldYearDateTable <- renderTable({
+  output$PastYearDateTable <- renderTable({
     
     ## Get variables from inputs
     Species <- input$Species_OldYears
@@ -68,7 +68,7 @@ server <- function(input, output) {
   })
   
   ## Render plot for the current year
-  output$ThisYearPlot <- renderPlot({
+  output$CurrentYearPlot <- renderPlot({
     
     ## Get variables from inputs
     Species <- input$Species_ThisYear
@@ -81,7 +81,7 @@ server <- function(input, output) {
   })
   
   ## Render plot title for current year
-  output$ThisYearPlotTitle <- renderText({
+  output$CurrentYearPlotTitle <- renderText({
     
     ## Get variables from inputs
     Species <- input$Species_ThisYear
@@ -96,7 +96,7 @@ server <- function(input, output) {
   })
   
   ## Render plot summary for current year
-  output$ThisYearSummary <- renderText({
+  output$CurrentYearSummary <- renderText({
     
     ## Get variables from inputs
     Species <- input$Species_ThisYear
@@ -110,7 +110,7 @@ server <- function(input, output) {
   })
   
   ## Render key dates for this year only
-  output$ThisYearDateTable <- renderTable({
+  output$CurrentYearDateTable <- renderTable({
     
     ## Get variables from inputs
     Species <- input$Species_ThisYear
