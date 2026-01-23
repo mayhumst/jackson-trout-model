@@ -60,13 +60,9 @@ get_USGS <- function(WTP, GD, TD, TC, Temp, Dis, FallStart, SpringEnd, StDate, E
   today_date <- as.Date(Sys.time(), tz = "America/New_York")
   for(i in 1:nrow(Temps)) {
     if (Temps$Date[[i]] > today_date) {
-      print("xxxx")
       Temps$meanT.y[[i]] <- NA
       Temps$meanT.x[[i]] <- NA
       Temps$MeanT[[i]] <- NA
-    }
-    else {
-      print("yyyy")
     }
   }
   
@@ -156,7 +152,7 @@ update_data <- function(today, last_update) {
     
     check_to_replace <- old_data %>%
       filter(Year == i)
-
+    
     if(nrow(check_to_replace) == 1) { # if the critical dates already has an entry for this water year
       old_data[old_data$Year == i,] <- BT_crit_dates
     } else {
@@ -170,15 +166,12 @@ update_data <- function(today, last_update) {
 
     RT_crit_dates <- RT_model(Temps_This_Year, i)
     
-    print(RT_crit_dates)
-
     ## Update the CSV file with Rainbow Trout critical dates
 
     filename = "data/RT_Critical_Dates.csv"
     old_data <- read.csv(filename,
                          colClasses = c("integer", "integer", "Date", "Date", "Date", "integer",
                                         "Date", "Date", "Date"))
-    print(old_data)
     check_to_replace <- old_data %>%
       filter(Year == i)
 
@@ -189,8 +182,6 @@ update_data <- function(today, last_update) {
         bind_rows(RT_crit_dates)
     }
     
-    print(old_data)
-
     write.csv(old_data, filename, row.names=FALSE)
     
 

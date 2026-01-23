@@ -143,8 +143,7 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   This_Year_Temps$scaled_dis <- This_Year_Temps$maxD/coeff
   x1 <- min(This_Year_Temps$Date, na.rm=TRUE)
   x2 <- max(This_Year_Temps$Date, na.rm=TRUE)
-  print(This_Year_Crit_Dates)
-  
+
   ## Get key dates
   NoWinSpawn <- paste(toString(This_Year_Crit_Dates$Year[1] - 1), "-12-14", sep="")
   NoWinSpawn <- as.Date(NoWinSpawn)
@@ -316,8 +315,6 @@ show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_
   if(current_year == TRUE) {
     if(species == "Brown") {
       
-      print(111)
-      
       ## Check if currently in ideal water temperature range
       
       ret <- "<p>Today's water temperature is "
@@ -331,8 +328,6 @@ show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_
       else {
         ret <- paste(ret, "<span style='color:green;'>not within</span> the ideal temperature range for <b>Brown Trout.</b>", sep="")
       }
-      
-      print(222)
       
       ## Check if within spawn window
       
@@ -354,7 +349,6 @@ show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_
         ret <- paste(ret, " Today's date is <span>not within</span> the predicted spawn window.", sep="")
       }
       
-      print(333)
       ret <- paste(ret, "</p>", sep="")
       return (ret)
     }

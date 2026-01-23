@@ -18,7 +18,7 @@ BT_model <- function(This_Year_Temps, this_year) {
   Graph_Crit_Dates$HaStart <- as.Date(Graph_Crit_Dates$HaStart)
   Graph_Crit_Dates$EmStart <- as.Date(Graph_Crit_Dates$EmStart)
   
-  ## Determine start/end date vars
+  ## Dummy variables at beginning and end of water year
     
   SpringYear <- this_year
   FallYear <- SpringYear-1
@@ -29,20 +29,41 @@ BT_model <- function(This_Year_Temps, this_year) {
   StDate <- as.Date(FallStart)
   EndDate <- as.Date(SpringEnd)
   
+  Graph_Crit_Dates[1,1] <- SpringYear
+  
   ## Determine start and end dates for Fall spawn
   
   F1 <- subset(This_Year_Temps, Year == FallYear)
   F1 <- subset(F1, MeanT < 12)
   F1 <- subset(F1, MeanT > 6)
+  
+  ## CHECK: if there are NO dates in which temperatures were consistent with spawning, 
+  ##        skip the calculations for spawn, hatch, and emergence.
+  if(nrow(F1) == 0) {
+    return(Graph_Crit_Dates)
+  } 
+    
   FSp_Start <- min(F1$Date, na.rm = TRUE)
   FSp_End <- max(F1$Date, na.rm=TRUE)
+  Graph_Crit_Dates[1,2] <- FSp_Start
+  Graph_Crit_Dates[1,4] <- FSp_End
   
   ## Determine average date for peak Fall spawn
   
   F1 <- subset(F1, MeanT < 10 | MeanT > 8)
-  FSp_peak <- mean.Date(F1$Date)
   
-  HaEarly <- subset(This_Year_Temps, Date > FSp_Start)
+  ## CHECK: if there are NO dates in which temperatures were consistent with PEAK spawning, 
+  ##        skip the calculations for spawn peak, hatch, and emergence.
+  if(nrow(F1) == 0) {
+    return(Graph_Crit_Dates)
+  } 
+  
+  FSp_peak <- mean.Date(F1$Date)
+  Graph_Crit_Dates[1,3] <- FSp_peak
+  
+  # Begin calculating hatch
+  
+  HaStart <- subset(This_Year_Temps, Date > FSp_Start)
   HaPeak <- subset(This_Year_Temps, Date > FSp_peak)
   
   ## The linear model below mimics the approach used in the model
@@ -51,7 +72,9 @@ BT_model <- function(This_Year_Temps, this_year) {
   
   # HaPeak$dmatZ <- 0.0032*HaPeak$MeanT-0.0056
   # HaPeak$pmatZ <- cumsum(HaPeak$dmatZ)
-  
+  # threshold <- 1
+  # Z_first_exceed_index <- which.max(HaPeak$pmatZ > threshold)
+  # Z_hatch_start_date <- HaPeak$Date[Z_first_exceed_index]
   
   ## Parameters for Elliott and Hurley 1998 model
   
@@ -63,55 +86,56 @@ BT_model <- function(This_Year_Temps, this_year) {
   # The nonlinear model below was proposed by Elliott and Hurley 1998
   # It does a decent job of predicting hatch and emergence in Syrjanen et al. 2008
   
-  HaEarly$dmatEH <- 1 / (C_H50*(T1-HaEarly$MeanT)/(HaEarly$MeanT-T0))
-  HaEarly$pmatEH <- cumsum(HaEarly$dmatEH)
+  HaStart$dmatEH <- 1 / (C_H50*(T1-HaStart$MeanT)/(HaStart$MeanT-T0))
+  HaStart$pmatEH <- cumsum(HaStart$dmatEH)
   
   HaPeak$dmatEH <- 1 / (C_H50*(T1-HaPeak$MeanT)/(HaPeak$MeanT-T0))
   HaPeak$pmatEH <- cumsum(HaPeak$dmatEH)
   
   threshold <- 1  # Set your desired threshold value
   
-  ## Find the first index where "Value" exceeds the threshold
+  ## Find the first index where "Value" exceeds the threshold, and extract the corresponding date
   
-  # Z_first_exceed_index <- which.max(HaPeak$pmatZ > threshold)
-  EH_first_exceed_index <- which.max(HaPeak$pmatEH > threshold)
-  EH_early_first_exceed_index <- which.max(HaEarly$pmatEH > threshold)
+  if(nrow(subset(HaStart, pmatEH >= 1)) > 0) { # check if the threshold has yet been reached at all
+    EH_start_first_exceed_index <- which.max(HaStart$pmatEH > threshold)
+    EH_hatch_start_date <- HaPeak$Date[EH_start_first_exceed_index]
+    Graph_Crit_Dates[1,5] <- EH_hatch_start_date
+  } else {
+    return(Graph_Crit_Dates)
+  }
+  if(nrow(subset(HaPeak, pmatEH >= 1)) > 0) { # check if the threshold has yet been reached at all
+    
+    EH_peak_first_exceed_index <- which.max(HaPeak$pmatEH > threshold)
+    EH_hatch_peak_date <- HaPeak$Date[EH_peak_first_exceed_index]
+    Graph_Crit_Dates[1,6] <- EH_hatch_peak_date
+  } else {
+    return(Graph_Crit_Dates)
+  }
+
+  # Calculate emergence dates following Elliott and Hurley 1998
   
-  ## Extract the corresponding date
-  
-  # Z_hatch_start_date <- HaPeak$Date[Z_first_exceed_index]
-  EH_hatch_start_date <- HaPeak$Date[EH_early_first_exceed_index]
-  EH_hatch_peak_date <- HaPeak$Date[EH_first_exceed_index]
-  
-  # Calculate emergence date following Elliott and Hurley 1998
-  
-  EmEarly <- subset(This_Year_Temps, Date > EH_hatch_start_date)
-  EmEarly$dmat <- 1 / (C_A50*(T1-EmEarly$MeanT)/(EmEarly$MeanT-T0))
-  EmEarly$pmat <- cumsum(EmEarly$dmat)
+  EmStart <- subset(This_Year_Temps, Date > EH_hatch_start_date)
+  EmStart$dmat <- 1 / (C_A50*(T1-EmStart$MeanT)/(EmStart$MeanT-T0))
+  EmStart$pmat <- cumsum(EmStart$dmat)
   threshold <- 1
-  first_exceed_index <- which.max(EmEarly$pmat > threshold)
-  emergence_start_date <- EmEarly$Date[first_exceed_index]
   
+  if(nrow(subset(EmStart, pmatEH >= 1)) > 0) { # check if the threshold has yet been reached at all
+    first_exceed_index <- which.max(EmStart$pmat > threshold)
+    emergence_start_date <- EmStart$Date[first_exceed_index]
+    Graph_Crit_Dates[1,7] <- emergence_start_date
+  } 
   
   EmPeak <- subset(This_Year_Temps, Date > EH_hatch_peak_date)
   EmPeak$dmat <- 1 / (C_A50*(T1-EmPeak$MeanT)/(EmPeak$MeanT-T0))
   EmPeak$pmat <- cumsum(EmPeak$dmat)
-  threshold <- 1
-  first_exceed_index <- which.max(EmPeak$pmat > threshold)
-  emergence_peak_date <- EmPeak$Date[first_exceed_index]
   
-  
-  ## Critical dates such as spawning start, peak spawn, etc. are appended to matrix
-  
-  Graph_Crit_Dates[1,1] <- SpringYear
-  Graph_Crit_Dates[1,2] <- FSp_Start
-  Graph_Crit_Dates[1,3] <- FSp_peak
-  Graph_Crit_Dates[1,4] <- FSp_End
-  Graph_Crit_Dates[1,5] <- EH_hatch_start_date
-  Graph_Crit_Dates[1,6] <- EH_hatch_peak_date
-  Graph_Crit_Dates[1,7] <- emergence_start_date
-  Graph_Crit_Dates[1,8] <- emergence_peak_date
-  
+  if(nrow(subset(EmPeak, pmatEH >= 1)) > 0) { # check if the threshold has yet been reached at all
+    first_exceed_index <- which.max(EmPeak$pmat > threshold)
+    emergence_peak_date <- EmPeak$Date[first_exceed_index]
+    Graph_Crit_Dates[1,8] <- emergence_peak_date
+  } 
+
+  ## Return the final matrix of known critical dates
   
   return(Graph_Crit_Dates)
   
@@ -182,7 +206,18 @@ RT_model <- function(Temps, this_year) {
   S1 <- subset(S1, Date < WinterSpawnEnd)
   S1 <- subset(S1, MeanT < 9)
   S1 <- subset(S1, MeanT > 6)
+  
+  
+  
+  
   WinSpawnLen <- length(S1$Date)
+  
+  
+  #####################
+  #spawn_start <- s1[1]
+  #spawn_end <- s1[WinSpawnLen]
+  #####################
+  
   WinSpawnAvg <- mean(S1$Date)
   
   ## THERE IS A PROBLEM WITH THE ABOVE ALGORITHM.###
