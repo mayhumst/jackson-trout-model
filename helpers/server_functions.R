@@ -118,21 +118,20 @@ format_single_year_data_table <- function(Species, Year) {
     ## Get the single row of critical dates
     Single_Year <- get_year_dates(as.integer(Year), Species)
     ## Drop the "Year" column
-    Single_Year <- Single_Year[c("SpawnStart", "SpawnPeak", "SpawnEnd", 
+    Single_Year <- Single_Year[c("SpawnStart", "SpawnPeak",  
                                  "HaStart", "HaPeak", "EmStart", "EmPeak")]
     
     ## Confirm dates are formatted correctly. Can change formatting to something
     ##  else if desired, e.g. '%Y-%m-%d', but must specify a formatting.
     Single_Year$SpawnStart <- format(Single_Year$SpawnStart, "%b %d")
     Single_Year$SpawnPeak <- format(Single_Year$SpawnPeak, "%b %d")
-    Single_Year$SpawnEnd <- format(Single_Year$SpawnEnd, "%b %d")
     Single_Year$HaStart <- format(Single_Year$HaStart, "%b %d")
     Single_Year$HaPeak <- format(Single_Year$HaPeak, "%b %d")
     Single_Year$EmStart <- format(Single_Year$EmStart, "%b %d")
     Single_Year$EmPeak <- format(Single_Year$EmPeak, "%b %d")
     
     ## Change column names to reader-friendly
-    colnames(Single_Year) <- c("Spawn Start", "Spawn Peak", "Spawn End", 
+    colnames(Single_Year) <- c("Spawn Start", "Spawn Peak", 
                                "Hatch Start", "Hatch Peak", "Emergence Start", 
                                "Emergence Peak")
     return(Single_Year)
@@ -187,14 +186,16 @@ format_all_years_data_table <- function(Species) {
     ##  else if desired, e.g. '%Y-%m-%d', but must specify a formatting.
     Key_Dates$SpawnStart <- format(Key_Dates$SpawnStart, "%b %d")
     Key_Dates$SpawnPeak <- format(Key_Dates$SpawnPeak, "%b %d")
-    Key_Dates$SpawnEnd <- format(Key_Dates$SpawnEnd, "%b %d")
     Key_Dates$HaStart <- format(Key_Dates$HaStart, "%b %d")
     Key_Dates$HaPeak <- format(Key_Dates$HaPeak, "%b %d")
     Key_Dates$EmStart <- format(Key_Dates$EmStart, "%b %d")
     Key_Dates$EmPeak <- format(Key_Dates$EmPeak, "%b %d")
     
+    # Remove "spawn end" (not necessary to show)
+    Key_Dates$SpawnEnd <- NULL
+
     ## Change column names to reader-friendly
-    colnames(Key_Dates) <- c("Year", "Spawn Start", "Spawn Peak", "Spawn End", 
+    colnames(Key_Dates) <- c("Year", "Spawn Start", "Spawn Peak", 
                              "Hatch Start", "Hatch Peak", "Emergence Start", 
                              "Emergence Peak")
     
