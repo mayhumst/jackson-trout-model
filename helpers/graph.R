@@ -160,81 +160,129 @@ RT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   x2 <- max(This_Year_Temps$Date, na.rm=TRUE)
 
   ## Get key dates
-  NoWinSpawn <- paste(toString(This_Year_Crit_Dates$Year[1] - 1), "-12-14", sep="")
-  NoWinSpawn <- as.Date(NoWinSpawn)
-  SprSpawnAvg <- This_Year_Crit_Dates$SprSpawn[1]
-  Z_hatch_Spr_date <- This_Year_Crit_Dates$SprHatch[1]
-  emergence_Spr_date <- This_Year_Crit_Dates$SprEmerg[1]
-  WinSpawnAvg <- This_Year_Crit_Dates$WinSpawn[1]
-  Z_hatch_Win_date <- This_Year_Crit_Dates$WinHatch[1]
-  emergence_Win_date <- This_Year_Crit_Dates$WinEmerg[1]
+  NoWinSpawn <- as.Date(paste(toString(This_Year_Crit_Dates$Year[1] - 1), "-12-14", sep=""))
   WinSpawnLen <- This_Year_Crit_Dates$WinSpawnLen[1]
   SprSpawnLen <- This_Year_Crit_Dates$SprSpawnLen[1]
   
+  WinSpawnStart <- This_Year_Crit_Dates$WinSpawnStart[1]
+  WinSpawnPeak <- This_Year_Crit_Dates$WinSpawnPeak[1]
+  WinSpawnEnd <- This_Year_Crit_Dates$WinSpawnEnd[1]
+  WinHatchStart <- This_Year_Crit_Dates$WinHatchStart[1]
+  WinHatchPeak <- This_Year_Crit_Dates$WinHatchPeak[1]
+  WinEmergStart <- This_Year_Crit_Dates$WinEmergStart[1]
+  WinEmergPeak <- This_Year_Crit_Dates$WinEmergPeak[1]
+  SprSpawnStart <- This_Year_Crit_Dates$SprSpawnStart[1]
+  SprSpawnPeak <- This_Year_Crit_Dates$SprSpawnPeak[1]
+  SprSpawnEnd <- This_Year_Crit_Dates$SprSpawnEnd[1]
+  SprHatchStart <- This_Year_Crit_Dates$SprHatchStart[1]
+  SprHatchPeak <- This_Year_Crit_Dates$SprHatchPeak[1]
+  SprEmergStart <- This_Year_Crit_Dates$SprEmergStart[1]
+  SprEmergPeak <- This_Year_Crit_Dates$SprEmergPeak[1]
+  
+  #SprSpawnAvg <- This_Year_Crit_Dates$SprSpawn[1]
+  #Z_hatch_Spr_date <- This_Year_Crit_Dates$SprHatch[1]
+  #emergence_Spr_date <- This_Year_Crit_Dates$SprEmerg[1]
+  #WinSpawnAvg <- This_Year_Crit_Dates$WinSpawn[1]
+  #Z_hatch_Win_date <- This_Year_Crit_Dates$WinHatch[1]
+  #emergence_Win_date <- This_Year_Crit_Dates$WinEmerg[1]
+  
+  
   ## DELETE all interpolated temp values after today's date
   today_date <- as.Date(Sys.time(), tz = "America/New_York")
-  for(i in 1:nrow(This_Year_Temps)) {
-    if (This_Year_Temps$Date[[i]] > today_date) {
-      This_Year_Temps$meanT.y[[i]] <- NA
-      This_Year_Temps$meanT.x[[i]] <- NA
-      This_Year_Temps$MeanT[[i]] <- NA
-    }
-  }
+  #for(i in 1:nrow(This_Year_Temps)) {
+  #  if (This_Year_Temps$Date[[i]] > today_date) {
+  #    This_Year_Temps$meanT.y[[i]] <- NA
+  #    This_Year_Temps$meanT.x[[i]] <- NA
+  #    This_Year_Temps$MeanT[[i]] <- NA
+  #  }
+  #}
   
   ## Build graph
   TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date))
   
-  # show spawn window
+  ## show spawn window
   TDPlot <- TDPlot +
-    annotate('rect', xmin=SprSpawnAvg,
-             xmax=SprSpawnAvg+SprSpawnLen, ymin=11, ymax=Inf,
+    annotate('rect', xmin=SprSpawnStart,
+             xmax=SprSpawnEnd, ymin=11, ymax=Inf,
              alpha = .6, fill="#2c7fb8") +
-    annotate(geom="text", x=SprSpawnAvg, y=21, label="Spawn",
+    annotate(geom="text", x=SprSpawnStart, y=21, label="Spawn",
              color="black", angle=0) 
-  if(is.na(This_Year_Crit_Dates$WinSpawnLen[1])) {
+  if(This_Year_Crit_Dates$WinSpawnLen[1] == 0) {
     TDPlot <- TDPlot +
     annotate(geom="text", x=NoWinSpawn, y=18, label="No Winter Spawn",
              color="darkred", angle=90)
   } else {
     TDPlot <- TDPlot +
-    annotate('rect', xmin=WinSpawnAvg,
-             xmax=WinSpawnAvg+WinSpawnLen, ymin=0, ymax=11,
+    annotate('rect', xmin=WinSpawnStart,
+             xmax=WinSpawnEnd, ymin=0, ymax=11,
              alpha = .6, fill="#2c7fb8") +
-    annotate(geom="text", x=WinSpawnAvg, y=3, label="Spawn",
+    annotate(geom="text", x=WinSpawnStart, y=3, label="Spawn",
              color="black", angle=0) 
   }
   
   
   # show hatch window
-  TDPlot <- TDPlot +
-    annotate('rect', xmin=Z_hatch_Spr_date,
-             xmax=Z_hatch_Spr_date+20, ymin=11, ymax=Inf,
-             alpha = .7, fill="#7fcdbb") +
-    annotate(geom="text", x=Z_hatch_Spr_date, y=20, label="Hatch",
-             color="black", angle=0)
-  if(is.na(This_Year_Crit_Dates$WinSpawnLen[1]) == FALSE) {
+  if(!is.na(SprHatchStart) && is.na(SprHatchPeak)) { # if spr hatch start known but peak unknown
     TDPlot <- TDPlot +
-      annotate('rect', xmin=Z_hatch_Win_date,
-            xmax=Z_hatch_Win_date+20, ymin=0, ymax=11,
+      annotate('rect', xmin=SprHatchStart,
+               xmax=today_date, ymin=11, ymax=Inf,
+               alpha = .7, fill="#7fcdbb") +
+      annotate(geom="text", x=SprHatchStart, y=20, label="Hatch",
+               color="black", angle=0)
+  } else { # BOTH start and peak known OR NEITHER
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=SprHatchStart,
+               xmax=SprHatchPeak+7, ymin=11, ymax=Inf,
+               alpha = .7, fill="#7fcdbb") +
+      annotate(geom="text", x=SprHatchStart, y=20, label="Hatch",
+               color="black", angle=0)
+  }
+  if(!is.na(WinHatchStart) && is.na(WinHatchPeak)) { # if win hatch start known but peak unknown
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=WinHatchStart,
+            xmax=today_date, ymin=0, ymax=11,
              alpha = .7, fill="#7fcdbb") +
-      annotate(geom="text", x=Z_hatch_Win_date, y=2, label="Hatch",
+      annotate(geom="text", x=WinHatchStart, y=2, label="Hatch",
+               color="black", angle=0)
+  } else { # BOTH start and peak known OR NEITHER
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=WinHatchStart,
+               xmax=WinHatchPeak+7, ymin=0, ymax=11,
+               alpha = .7, fill="#7fcdbb") +
+      annotate(geom="text", x=WinHatchStart, y=2, label="Hatch",
                color="black", angle=0)
   }
   
   # show emergence window
-  TDPlot <- TDPlot +
-    annotate('rect', xmin=emergence_Spr_date,
-             xmax=emergence_Spr_date+20, ymin=11, ymax=Inf,
-             alpha = .7, fill="#edf8b1") +
-    annotate(geom="text", x=emergence_Spr_date, y=19, label="Emergence",
-             color="black", angle=0) 
-  if(is.na(This_Year_Crit_Dates$WinSpawnLen[1]) == FALSE) {
+  if(!is.na(SprEmergStart) && is.na(SprEmergPeak)) { # if spr emerg start known but peak unknown
     TDPlot <- TDPlot +
-      annotate('rect', xmin=emergence_Win_date,
-               xmax=emergence_Win_date+20, ymin=0, ymax=11,
+      annotate('rect', xmin=SprEmergStart,
+               xmax=today_date, ymin=11, ymax=Inf,
                alpha = .7, fill="#edf8b1") +
-      annotate(geom="text", x=emergence_Win_date, y=1, label="Emergence",
-               color="black", angle=0) 
+      annotate(geom="text", x=SprHatchStart, y=19, label="Hatch",
+               color="black", angle=0)
+  } else { # BOTH start and peak known OR NEITHER
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=SprEmergStart,
+               xmax=SprEmergPeak+7, ymin=11, ymax=Inf,
+               alpha = .7, fill="#edf8b1") +
+      annotate(geom="text", x=SprHatchStart, y=19, label="Hatch",
+               color="black", angle=0)
+  }
+  if(!is.na(WinEmergStart) && is.na(WinEmergPeak)) { # if win emerg start known but peak unknown
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=WinEmergStart,
+               xmax=today_date, ymin=0, ymax=11,
+               alpha = .7, fill="#edf8b1") +
+      annotate(geom="text", x=WinHatchStart, y=1, label="Hatch",
+               color="black", angle=0)
+  } else { # BOTH start and peak known OR NEITHER
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=WinEmergStart,
+               xmax=WinEmergPeak+7, ymin=0, ymax=11,
+               alpha = .7, fill="#edf8b1") +
+      annotate(geom="text", x=WinHatchStart, y=1, label="Hatch",
+               color="black", angle=0)
   }
   
   # Plot temperature and max daily discharge
