@@ -22,15 +22,8 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   emergence_start_date <- This_Year_Crit_Dates$EmStart[[1]]
   emergence_peak_date <- This_Year_Crit_Dates$EmPeak[[1]]
   
-  ## DELETE all interpolated temp values after today's date
+  # Get today's date
   today_date <- as.Date(Sys.time(), tz = "America/New_York")
-  #for(i in 1:nrow(This_Year_Temps)) {
-  #  if (This_Year_Temps$Date[[i]] > today_date) {
-  #    This_Year_Temps$meanT.y[[i]] <- NA
-  #    This_Year_Temps$meanT.x[[i]] <- NA
-  #    This_Year_Temps$MeanT[[i]] <- NA
-  #  }
-  #}
   
   ## Build graph
   TDPlot <- ggplot(data = This_Year_Temps, aes(x=Date))
@@ -42,28 +35,50 @@ BT_graph <- function(This_Year_Temps, This_Year_Crit_Dates) {
   #           color="darkgreen", angle=0, size = 6)
   
   # show spawn window
-  TDPlot <- TDPlot +
-    annotate('rect', xmin=FSp_Start,
-             xmax=FSp_End, ymin=0, ymax=Inf,
-             alpha = .6, fill="#2c7fb8") +
-    annotate(geom="text", x=FSp_Start, y=20, label="Spawn",
-             color="black", angle=0) 
+  if(!is.na(FSp_Start) && !is.na(FSp_End)) { # if we have known spawn start/end
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=FSp_Start,
+               xmax=FSp_End, ymin=0, ymax=Inf,
+               alpha = .6, fill="#2c7fb8") +
+      annotate(geom="text", x=FSp_Start, y=20, label="Spawn",
+               color="black", angle=0) 
+  } 
+  
   
   # show hatch window
-  TDPlot <- TDPlot +
-    annotate('rect', xmin=EH_hatch_start_date,
-             xmax=EH_hatch_peak_date+7, ymin=0, ymax=Inf,
-             alpha = .7, fill="#7fcdbb") +
-    annotate(geom="text", x=EH_hatch_start_date, y=20, label="Hatch",
-             color="black", angle=0)
+  if(!is.na(EH_hatch_start_date) && !is.na(EH_hatch_peak_date)) { # if we have known hatch start/peak
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=EH_hatch_start_date,
+               xmax=EH_hatch_peak_date+7, ymin=0, ymax=Inf,
+               alpha = .7, fill="#7fcdbb") +
+      annotate(geom="text", x=EH_hatch_start_date, y=20, label="Hatch",
+               color="black", angle=0)
+  } else if(!is.na(EH_hatch_start_date) && is.na(EH_hatch_peak_date)) { # if we have hatch start but NOT peak
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=EH_hatch_start_date,
+               xmax=today_date, ymin=0, ymax=Inf,
+               alpha = .7, fill="#7fcdbb") +
+      annotate(geom="text", x=EH_hatch_start_date, y=20, label="Hatch",
+               color="black", angle=0)
+  }
+  
   
   # show emergence window
-  TDPlot <- TDPlot +
-    annotate('rect', xmin=emergence_start_date,
-             xmax=emergence_peak_date+7, ymin=0, ymax=Inf,
-             alpha = .7, fill="#edf8b1") +
-    annotate(geom="text", x=emergence_start_date, y=20, label="Emergence",
-             color="black", angle=0) 
+  if(!is.na(emergence_start_date) && !is.na(emergence_peak_date)) { # if we have known emerg start/peak
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=emergence_start_date,
+               xmax=emergence_peak_date+7, ymin=0, ymax=Inf,
+               alpha = .7, fill="#edf8b1") +
+      annotate(geom="text", x=emergence_start_date, y=20, label="Emergence",
+               color="black", angle=0) 
+  } else if(!is.na(emergence_start_date) && is.na(emergence_peak_date)) { # if we have emerg start but NOT peak
+    TDPlot <- TDPlot +
+      annotate('rect', xmin=emergence_start_date,
+               xmax=today_date, ymin=0, ymax=Inf,
+               alpha = .7, fill="#edf8b1") +
+      annotate(geom="text", x=emergence_start_date, y=20, label="Emergence",
+               color="black", angle=0) 
+  }
   
   # Plot temperature and max daily discharge
   TDPlot <- TDPlot +
