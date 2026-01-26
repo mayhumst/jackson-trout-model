@@ -119,7 +119,7 @@ BT_model <- function(This_Year_Temps, this_year) {
   EmStart$pmat <- cumsum(EmStart$dmat)
   threshold <- 1
   
-  if(nrow(subset(EmStart, pmatEH >= 1)) > 0) { # check if the threshold has yet been reached at all
+  if(nrow(subset(EmStart, pmat >= 1)) > 0) { # check if the threshold has yet been reached at all
     first_exceed_index <- which.max(EmStart$pmat > threshold)
     emergence_start_date <- EmStart$Date[first_exceed_index]
     Graph_Crit_Dates[1,7] <- emergence_start_date
@@ -129,7 +129,7 @@ BT_model <- function(This_Year_Temps, this_year) {
   EmPeak$dmat <- 1 / (C_A50*(T1-EmPeak$MeanT)/(EmPeak$MeanT-T0))
   EmPeak$pmat <- cumsum(EmPeak$dmat)
   
-  if(nrow(subset(EmPeak, pmatEH >= 1)) > 0) { # check if the threshold has yet been reached at all
+  if(nrow(subset(EmPeak, pmat >= 1)) > 0) { # check if the threshold has yet been reached at all
     first_exceed_index <- which.max(EmPeak$pmat > threshold)
     emergence_peak_date <- EmPeak$Date[first_exceed_index]
     Graph_Crit_Dates[1,8] <- emergence_peak_date
@@ -147,17 +147,29 @@ RT_model <- function(Temps, this_year) {
   
   ## Create single-row matrix to store critical dates from this water year
   
-  RBT_CritDates = matrix(data=NA, nrow=1, ncol=9)
-  colnames(RBT_CritDates) <- c("Year", "WinSpawnLen", "WinSpawn", "WinHatch", "WinEmerg", 
-                               "SprSpawnLen", "SprSpawn","SprHatch", "SprEmerg")
+  RBT_CritDates = matrix(data=NA, nrow=1, ncol=17)
+  colnames(RBT_CritDates) <- c("Year", "WinSpawnLen", "WinSpawnStart", 
+                               "WinSpawnPeak", "WinSpawnEnd", "WinHatchStart", 
+                               "WinHatchPeak", "WinEmergStart", "WinEmergPeak", 
+                               "SprSpawnLen", "SprSpawnStart", "SprSpawnPeak", 
+                               "SprSpawnEnd", "SprHatchStart", "SprHatchPeak",
+                               "SprEmergStart", "SprEmergPeak")
   RBT_CritDates <- as.data.frame(RBT_CritDates)
-  RBT_CritDates$WinSpawn <- as.Date(RBT_CritDates$WinSpawn)
-  RBT_CritDates$WinHatch <- as.Date(RBT_CritDates$WinHatch)
-  RBT_CritDates$WinEmerg <- as.Date(RBT_CritDates$WinEmerg)
-  RBT_CritDates$SprSpawn <- as.Date(RBT_CritDates$SprSpawn)
-  RBT_CritDates$SprHatch <- as.Date(RBT_CritDates$SprHatch)
-  RBT_CritDates$SprEmerg <- as.Date(RBT_CritDates$SprEmerg)
-  
+  RBT_CritDates$WinSpawnStart <- as.Date(RBT_CritDates$WinSpawnStart)
+  RBT_CritDates$WinSpawnPeak <- as.Date(RBT_CritDates$WinSpawnPeak)
+  RBT_CritDates$WinSpawnEnd <- as.Date(RBT_CritDates$WinSpawnEnd)
+  RBT_CritDates$WinHatchStart <- as.Date(RBT_CritDates$WinHatchStart)
+  RBT_CritDates$WinHatchPeak <- as.Date(RBT_CritDates$WinHatchPeak)
+  RBT_CritDates$WinEmergStart <- as.Date(RBT_CritDates$WinEmergStart)
+  RBT_CritDates$WinEmergPeak <- as.Date(RBT_CritDates$WinEmergPeak)
+  RBT_CritDates$SprSpawnStart <- as.Date(RBT_CritDates$SprSpawnStart)
+  RBT_CritDates$SprSpawnPeak <- as.Date(RBT_CritDates$SprSpawnPeak)
+  RBT_CritDates$SprSpawnEnd <- as.Date(RBT_CritDates$SprSpawnEnd)
+  RBT_CritDates$SprHatchStart <- as.Date(RBT_CritDates$SprHatchStart)
+  RBT_CritDates$SprHatchPeak <- as.Date(RBT_CritDates$SprHatchPeak)
+  RBT_CritDates$SprEmergStart <- as.Date(RBT_CritDates$SprEmergStart)
+  RBT_CritDates$SprEmergPeak <- as.Date(RBT_CritDates$SprEmergPeak)
+
   ## Determine start/end date vars
   
   SpringYear <- this_year
@@ -179,6 +191,8 @@ RT_model <- function(Temps, this_year) {
   WinterSpawnStart <- as.Date(WinterSpawnStart)
   WinterSpawnEnd <- as.Date(WinterSpawnEnd)
   
+  RBT_CritDates[1,1] <- this_year
+  
   ## Parameters for Elliott and Hurley 1998 model
   ## The EH model is not as well supported for rainbow trout.
   ## The Zeug et al linear model works well, and is preferred.
@@ -189,136 +203,185 @@ RT_model <- function(Temps, this_year) {
   # C_A50 <- 36.35
   # C_H50 <- 39.86
   
-  #################### ******************************************************************************************** 
-  ## ??
-  #Temps <- complete(This_Year_Temps, Date=seq.Date(StDate, EndDate, by="1 day"))
+  #
+  # WINTER
+  #
   
-  #Temps$Date <- as.Date(Temps$Date)
+  # Determine length of winter spawn
   
-  ## Interpolate to fill missing values in daily temperature data
-  # x <- zoo(Temps$MeanT,Temps$Date)
-  # x <- as.ts(x)
-  # x <- na.interp(x)
-  # Temps$MeanT <- x
-  
-  # Determine length and average date of winter spawn
   S1 <- subset(Temps, Date > WinterSpawnStart)
   S1 <- subset(S1, Date < WinterSpawnEnd)
   S1 <- subset(S1, MeanT < 9)
   S1 <- subset(S1, MeanT > 6)
   
-  
-  
-  
   WinSpawnLen <- length(S1$Date)
+  RBT_CritDates[1,2] <- WinSpawnLen
   
+  # If there is a winter spawn, calculate and store dates
+  if(WinSpawnLen > 0) { 
+
+    WinSpawnStart <- min(S1$Date, na.rm = TRUE)
+    WinSpawnEnd <- max(S1$Date, na.rm=TRUE)
+    WinSpawnAvg <- mean(S1$Date)
+    RBT_CritDates[1,3] <- WinSpawnStart
+    RBT_CritDates[1,4] <- WinSpawnAvg
+    RBT_CritDates[1,5] <- WinSpawnEnd
+    
+
+    ## Calculate hatch /emergence for winter spawned embryos. The  
+    ## linear model applied below mimics the approach used in the 
+    ## embryo development model by Zeug et al 2012.  The emergence
+    ## model is parameterized with data from Murray et al 1980.
+    
+    # Determine winter hatch start date
+    HaWinStart <- subset(Temps, Date > WinSpawnStart)
+    HaWinStart$dmatZ <- 0.0032*HaWinStart$MeanT+0.003
+    HaWinStart$pmatZ <- cumsum(HaWinStart$dmatZ)
+    
+    threshold <- 1
+    
+    # Find the first index where "Value" exceeds the threshold
+    if(nrow(subset(HaWinStart, pmatZ >= 1)) > 0) {
+      Z_Win_hatch_start_first_exceed_index <- which.max(HaWinStart$pmatZ > threshold)
+      Z_win_hatch_start_date <- HaWinStart$Date[Z_Win_hatch_start_first_exceed_index]
+      RBT_CritDates[1,6] <- Z_win_hatch_start_date
+      bool_win_hatch_start <- TRUE
+    } else {
+      bool_win_hatch_start <- FALSE
+    }
+    
+
+    # Determine winter hatch peak date
+    HaWinPeak <- subset(Temps, Date > WinSpawnAvg)
+    HaWinPeak$dmatZ <- 0.0032*HaWinPeak$MeanT+0.003
+    HaWinPeak$pmatZ <- cumsum(HaWinPeak$dmatZ)
+    
+    threshold <- 1
+    
+    # Find the first index where "Value" exceeds the threshold
+    if(nrow(subset(HaWinPeak, pmatZ >= 1)) > 0) {
+      Z_Win_hatch_peak_first_exceed_index <- which.max(HaWinPeak$pmatZ > threshold)
+      Z_win_hatch_peak_date <- HaWinPeak$Date[Z_Win_hatch_peak_first_exceed_index]
+      RBT_CritDates[1,7] <- Z_win_hatch_peak_date
+      bool_win_hatch_peak <- TRUE
+    } else {
+      bool_win_hatch_peak <- FALSE
+    }
+    
+    # Determine emergence start dates IFF hatch start dates have been calculated
+    if(bool_win_hatch_start) {
+      EmWinStart <- subset(Temps, Date > Z_win_hatch_start_date)
+      EmWinStart$dmatZ <- 0.0056*EmWinStart$MeanT-0.0045
+      EmWinStart$pmatZ <- cumsum(EmWinStart$dmatZ)
+      if(nrow(subset(EmWinStart, pmatZ >= 1)) > 0) {
+        em_win_start_first_exceed_index <- which.max(EmWinStart$pmatZ > threshold)
+        emergence_Win_start_date <- EmWinStart$Date[em_win_start_first_exceed_index]
+        RBT_CritDates[1,8] <- emergence_Win_start_date
+      }
+    }
+    
+    # Determine emergence peak dates IFF hatch peak dates have been calculated
+    if(bool_win_hatch_peak) {
+      EmWinPeak <- subset(Temps, Date > Z_win_hatch_peak_date)
+      EmWinPeak$dmatZ <- 0.0056*EmWinPeak$MeanT-0.0045
+      EmWinPeak$pmatZ <- cumsum(EmWinPeak$dmatZ)
+      if(nrow(subset(EmWinPeak, pmatZ >= 1)) > 0) {
+        em_win_peak_first_exceed_index <- which.max(EmWinPeak$pmatZ > threshold)
+        emergence_Win_peak_date <- EmWinPeak$Date[em_win_peak_first_exceed_index]
+        RBT_CritDates[1,9] <- emergence_Win_peak_date
+      }
+    }
+  }
   
-  #####################
-  #spawn_start <- s1[1]
-  #spawn_end <- s1[WinSpawnLen]
-  #####################
+  #
+  # SPRING
+  #
   
-  WinSpawnAvg <- mean(S1$Date)
-  
-  ## THERE IS A PROBLEM WITH THE ABOVE ALGORITHM.###
-  ## IF THERE ARE NO DATES IN THE WINTER RANGE WHERE TEMP IS 6-9 C, 
-  ## THEN THIS LAST LINE RETURNS NaN.  IF THAT IS THE CASE, NEED TO SOMEHOW
-  ## ADJUST TO NOT EXECUTE ALL THE FUNCTIONS RELATED TO WINTER SPAWN.
-  ## WILL LIKELY NEED TO NEST SOME CONDITIONAL STATEMENTS IN HERE TO ACCOMODATE.
-  
-  # Determine average date for Spring spawn
+  # Determine length of Spring spawn
   
   S1 <- subset(Temps, Date > SpringSpawnStart)
   S1 <- subset(S1, Date < SpringEnd)
   S1 <- subset(S1, MeanT < 9)
   S1 <- subset(S1, MeanT > 6)
+  
   SpringSpawnLen <- length(S1$Date)
-  SpringSpawnAvg <- mean(S1$Date)
+  RBT_CritDates[1,10] <- SpringSpawnLen
   
-  ## Calculate hatch /emergence for winter spawned embryos. The  
-  ## linear model applied below mimics the approach used in the 
-  ## embryo development model by Zeug et al 2012.  The emergence
-  ## model is parameterized with data from Murray et al 1980.
-  
-  ## The following if/else structure is required to accomodate years where 
-  ## temperatures are too cold for a winter spawn from Dec 15 - Jan 15.
-  
-  if(is.na(WinSpawnAvg)){
-    Z_hatch_Win_date <- "Na"
-    emergence_Win_date <- "Na"
-  } else {
-    # Determine hatch dates
-    HaWin <- subset(Temps, Date > WinSpawnAvg)
-    HaWin$dmatZ <- 0.0032*HaWin$MeanT+0.003
-    HaWin$pmatZ <- cumsum(HaWin$dmatZ)
-    threshold <- 1
-    # Find the first index where "Value" exceeds the threshold
-    Z_Win_first_exceed_index <- which.max(HaWin$pmatZ > threshold)
-    # Extract the corresponding dates
-    Z_hatch_Win_date <- HaWin$Date[Z_Win_first_exceed_index]
-    # Determine emergence dates
-    EmWin <- subset(Temps, Date > Z_hatch_Win_date)
-    EmWin$dmatZ <- 0.0056*EmWin$MeanT-0.0045
-    EmWin$pmatZ <- cumsum(EmWin$dmatZ)
-    first_exceed_index <- which.max(EmWin$pmatZ > threshold)
-    emergence_Win_date <- EmWin$Date[first_exceed_index]
-  }
-  
-  
-  ##  Calculate hatch dates for winter spawned embryos.
-  
-  HaSpr<- subset(Temps, Date > SpringSpawnAvg)
-  HaSpr$dmatZ <- 0.0032*HaSpr$MeanT+0.003
-  HaSpr$pmatZ <- cumsum(HaSpr$dmatZ)
-  
-  threshold <- 1  # Set your desired threshold value
-  
-  # Find the first index where "Value" exceeds the threshold
-  
-  Z_Spr_first_exceed_index <- which.max(HaSpr$pmatZ > threshold)
-  
-  # Extract the corresponding dates
-  
-  Z_hatch_Spr_date <- HaSpr$Date[Z_Spr_first_exceed_index]
-  
-  ##  Calculate emergence dates for winter spawned embryos.
-  
-  if(length(Z_hatch_Spr_date) > 0) {
-    EmSpr <- subset(Temps, Date > Z_hatch_Spr_date)
-    EmSpr$dmatZ <- 0.0056*EmSpr$MeanT-0.0045
-    EmSpr$pmatZ <- cumsum(EmSpr$dmatZ)
+  if(SpringSpawnLen > 0) { # If there is a Spring spawn, calculate and store dates
+    SprSpawnStart <- min(S1$Date, na.rm = TRUE)
+    SprSpawnEnd <- max(S1$Date, na.rm=TRUE)
+    SprSpawnAvg <- mean(S1$Date)
+    RBT_CritDates[1,11] <- SprSpawnStart
+    RBT_CritDates[1,12] <- SprSpawnAvg
+    RBT_CritDates[1,13] <- SprSpawnEnd
+    
+    ## Calculate hatch /emergence for Spring spawned embryos. The  
+    ## linear model applied below mimics the approach used in the 
+    ## embryo development model by Zeug et al 2012.  The emergence
+    ## model is parameterized with data from Murray et al 1980.
+    
+    # Determine Spring hatch start date
+    HaSprStart <- subset(Temps, Date > SprSpawnStart)
+    HaSprStart$dmatZ <- 0.0032*HaSprStart$MeanT+0.003
+    HaSprStart$pmatZ <- cumsum(HaSprStart$dmatZ)
     
     threshold <- 1
-    first_exceed_index <- which.max(EmSpr$pmatZ > threshold)
-    emergence_Spr_date <- EmSpr$Date[first_exceed_index]
+    
+    # Find the first index where "Value" exceeds the threshold
+    if(nrow(subset(HaSprStart, pmatZ >= 1)) > 0) {
+      Z_spr_hatch_start_first_exceed_index <- which.max(HaSprStart$pmatZ > threshold)
+      Z_spr_hatch_start_date <- HaSprStart$Date[Z_spr_hatch_start_first_exceed_index]
+      RBT_CritDates[1,14] <- Z_spr_hatch_start_date
+      bool_spr_hatch_start <- TRUE
+    } else {
+      bool_spr_hatch_start <- FALSE
+    }
+    
+    # Determine spring hatch peak date
+    HaSprPeak <- subset(Temps, Date > SprSpawnAvg)
+    HaSprPeak$dmatZ <- 0.0032*HaSprPeak$MeanT+0.003
+    HaSprPeak$pmatZ <- cumsum(HaSprPeak$dmatZ)
+    
+    threshold <- 1
+    
+    # Find the first index where "Value" exceeds the threshold
+    if(nrow(subset(HaSprPeak, pmatZ >= 1)) > 0) {
+      Z_spr_hatch_peak_first_exceed_index <- which.max(HaSprPeak$pmatZ > threshold)
+      Z_spr_hatch_peak_date <- HaSprPeak$Date[Z_spr_hatch_peak_first_exceed_index]
+      RBT_CritDates[1,15] <- Z_spr_hatch_peak_date
+      bool_spr_hatch_peak <- TRUE
+    } else {
+      bool_spr_hatch_peak <- FALSE
+    }
+    
+    # Determine emergence start dates IFF hatch start dates have been calculated
+    if(bool_spr_hatch_start) {
+      EmSprStart <- subset(Temps, Date > Z_spr_hatch_start_date)
+      EmSprStart$dmatZ <- 0.0056*EmSprStart$MeanT-0.0045
+      EmSprStart$pmatZ <- cumsum(EmSprStart$dmatZ)
+      if(nrow(subset(EmSprStart, pmatZ >= 1)) > 0) {
+        em_spr_start_first_exceed_index <- which.max(EmSprStart$pmatZ > threshold)
+        emergence_spr_start_date <- EmSprStart$Date[em_spr_start_first_exceed_index]
+        RBT_CritDates[1,16] <- emergence_spr_start_date
+      }
+    }
+    
+    # Determine emergence peak dates IFF hatch peak dates have been calculated
+    if(bool_spr_hatch_peak) {
+      EmSprPeak <- subset(Temps, Date > Z_spr_hatch_peak_date)
+      EmSprPeak$dmatZ <- 0.0056*EmSprPeak$MeanT-0.0045
+      EmSprPeak$pmatZ <- cumsum(EmSprPeak$dmatZ)
+      if(nrow(subset(EmSprPeak, pmatZ >= 1)) > 0) {
+        em_spr_peak_first_exceed_index <- which.max(EmSprPeak$pmatZ > threshold)
+        emergence_spr_peak_date <- EmSprPeak$Date[em_spr_peak_first_exceed_index]
+        RBT_CritDates[1,17] <- emergence_spr_peak_date
+      }
+    }
   }
-  else {
-    emergence_Spr_date <- NA
-  }
   
-  
-  
-  ## Critical dates such as spawning start, peak spawn, etc. are appended to matrix
-  
-  RBT_CritDates[1,1] <- this_year
-  
-  if(is.na(WinSpawnAvg)) {
-    RBT_CritDates[1,6] <- SpringSpawnLen
-    RBT_CritDates[1,7] <- SpringSpawnAvg
-    RBT_CritDates[1,8] <- Z_hatch_Spr_date
-    RBT_CritDates[1,9] <- emergence_Spr_date
-  } else {
-    RBT_CritDates[1,2] <- WinSpawnLen
-    RBT_CritDates[1,3] <- WinSpawnAvg
-    RBT_CritDates[1,4] <- Z_hatch_Win_date
-    RBT_CritDates[1,5] <- emergence_Win_date
-    RBT_CritDates[1,6] <- SpringSpawnLen
-    RBT_CritDates[1,7] <- SpringSpawnAvg
-    RBT_CritDates[1,8] <- Z_hatch_Spr_date
-    RBT_CritDates[1,9] <- emergence_Spr_date
-  }
-  
+
   return(RBT_CritDates)
+  
 }
 
 

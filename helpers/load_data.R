@@ -142,6 +142,7 @@ update_data <- function(today, last_update) {
     
     source("./helpers/model.R")
     BT_crit_dates <- BT_model(Temps_This_Year, i)
+    print(BT_crit_dates)
     
     ## Update the CSV file with Brown Trout critical dates
     
@@ -165,13 +166,13 @@ update_data <- function(today, last_update) {
     ## Run Rainbow Trout model to update critical dates
 
     RT_crit_dates <- RT_model(Temps_This_Year, i)
-    
+
     ## Update the CSV file with Rainbow Trout critical dates
 
     filename = "data/RT_Critical_Dates.csv"
     old_data <- read.csv(filename,
-                         colClasses = c("integer", "integer", "Date", "Date", "Date", "integer",
-                                        "Date", "Date", "Date"))
+                         colClasses = c("integer", "integer", "Date", "Date", "Date", "Date", "Date", "Date", "Date","integer",
+                                        "Date", "Date", "Date", "Date", "Date", "Date", "Date"))
     check_to_replace <- old_data %>%
       filter(Year == i)
 

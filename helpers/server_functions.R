@@ -48,8 +48,8 @@ get_year_dates <- function(year, species) {
     
     filename <- "data/RT_Critical_Dates.csv"
     dates <- read.csv(filename, 
-                      colClasses = c("integer", "integer", "Date", "Date", "Date", "integer", 
-                                     "Date", "Date", "Date"))
+                      colClasses = c("integer", "integer", "Date", "Date", "Date", "Date", "Date", "Date", "Date","integer",
+                                     "Date", "Date", "Date", "Date", "Date", "Date", "Date"))
     correct_row <- dates %>%
       filter(Year == year)
     return(correct_row)
@@ -78,8 +78,8 @@ get_all_dates <- function(species) {
     ## Return Rainbow Trout critical dates
     filename <- "data/RT_Critical_Dates.csv"
     dates <- read.csv(filename, 
-                      colClasses = c("integer", "integer", "Date", "Date", "Date", "integer", 
-                                     "Date", "Date", "Date"))
+                      colClasses = c("integer", "integer", "Date", "Date", "Date", "Date", "Date", "Date", "Date","integer",
+                                     "Date", "Date", "Date", "Date", "Date", "Date", "Date"))
     return(dates)
     
   } else {
@@ -144,22 +144,39 @@ format_single_year_data_table <- function(Species, Year) {
     ## Get the single row of critical dates
     Single_Year <- get_year_dates(as.integer(Year), Species)
     ## Drop the "Year" column
-    Single_Year <- Single_Year[c("WinSpawnLen", "WinSpawn", "WinHatch", 
-                                 "WinEmerg", "SprSpawnLen", "SprSpawn", "SprHatch", "SprEmerg")]
+    Single_Year <- Single_Year[c("WinSpawnLen", "WinSpawnStart", 
+                                 "WinSpawnPeak", "WinSpawnEnd", "WinHatchStart", 
+                                 "WinHatchPeak", "WinEmergStart", "WinEmergPeak", 
+                                 "SprSpawnLen", "SprSpawnStart", "SprSpawnPeak", 
+                                 "SprSpawnEnd", "SprHatchStart", "SprHatchPeak",
+                                 "SprEmergStart", "SprEmergPeak")]
     
     ## Confirm dates are formatted correctly. Can change formatting to something
     ##  else if desired, e.g. '%Y-%m-%d', but must specify a formatting.
-    Single_Year$WinSpawn <- format(Single_Year$WinSpawn, "%b %d")
-    Single_Year$WinHatch <- format(Single_Year$WinHatch, "%b %d")
-    Single_Year$WinEmerg <- format(Single_Year$WinEmerg, "%b %d")
-    Single_Year$SprSpawn <- format(Single_Year$SprSpawn, "%b %d")
-    Single_Year$SprHatch <- format(Single_Year$SprHatch, "%b %d")
-    Single_Year$SprEmerg <- format(Single_Year$SprEmerg, "%b %d")
+    Single_Year$WinSpawnStart <- format(Single_Year$WinSpawnStart, "%b %d")
+    Single_Year$WinSpawnPeak <- format(Single_Year$WinSpawnPeak, "%b %d")
+    Single_Year$WinSpawnEnd <- format(Single_Year$WinSpawnEnd, "%b %d")
+    Single_Year$WinHatchStart <- format(Single_Year$WinHatchStart, "%b %d")
+    Single_Year$WinHatchPeak <- format(Single_Year$WinHatchPeak, "%b %d")
+    Single_Year$WinEmergStart <- format(Single_Year$WinEmergStart, "%b %d")
+    Single_Year$WinEmergPeak <- format(Single_Year$WinEmergPeak, "%b %d")
+    Single_Year$SprSpawnStart <- format(Single_Year$SprSpawnStart, "%b %d")
+    Single_Year$SprSpawnPeak <- format(Single_Year$SprSpawnPeak, "%b %d")
+    Single_Year$SprSpawnEnd <- format(Single_Year$SprSpawnEnd, "%b %d")
+    Single_Year$SprHatchStart <- format(Single_Year$SprHatchStart, "%b %d")
+    Single_Year$SprHatchPeak <- format(Single_Year$SprHatchPeak, "%b %d")
+    Single_Year$SprEmergStart <- format(Single_Year$SprEmergStart, "%b %d")
+    Single_Year$SprEmergPeak <- format(Single_Year$SprEmergPeak, "%b %d")
     
     ## Change column names to reader-friendly
-    colnames(Single_Year) <- c("Winter Spawn Length", "Winter Spawn Average", "Winter Hatch Average", 
-                               "Winter Emergence Average", "Spring Spawn Length", "Spring Spawn Average", "Spring Hatch Average", 
-                               "Spring Emergence Average")
+    colnames(Single_Year) <- c("Winter Spawn Length", "Winter Spawn Start", 
+                               "Winter Spawn Peak", "Winter Spawn End", 
+                               "Winter Hatch Start", "Winter Hatch Peak", 
+                               "Winter Emergence Start", "Winter Emergence Peak", 
+                               "Spring Spawn Length", "Spring Spawn Start", 
+                               "Spring Spawn Peak", "Spring Spawn End", 
+                               "Spring Hatch Start", "Spring Hatch Peak", 
+                               "Spring Emergence Start", "Spring Emergence Peak")
     return(Single_Year)
     
   }
@@ -214,17 +231,30 @@ format_all_years_data_table <- function(Species) {
     
     ## Confirm dates are formatted correctly. Can change formatting to something
     ##  else if desired, e.g. '%Y-%m-%d', but must specify a formatting.
-    Key_Dates$WinSpawn <- format(Key_Dates$WinSpawn, "%b %d")
-    Key_Dates$WinHatch <- format(Key_Dates$WinHatch, "%b %d")
-    Key_Dates$WinEmerg <- format(Key_Dates$WinEmerg, "%b %d")
-    Key_Dates$SprSpawn <- format(Key_Dates$SprSpawn, "%b %d")
-    Key_Dates$SprHatch <- format(Key_Dates$SprHatch, "%b %d")
-    Key_Dates$SprEmerg <- format(Key_Dates$SprEmerg, "%b %d")
+    Key_Dates$WinSpawnStart <- format(Key_Dates$WinSpawnStart, "%b %d")
+    Key_Dates$WinSpawnPeak <- format(Key_Dates$WinSpawnPeak, "%b %d")
+    Key_Dates$WinSpawnEnd <- format(Key_Dates$WinSpawnEnd, "%b %d")
+    Key_Dates$WinHatchStart <- format(Key_Dates$WinHatchStart, "%b %d")
+    Key_Dates$WinHatchPeak <- format(Key_Dates$WinHatchPeak, "%b %d")
+    Key_Dates$WinEmergStart <- format(Key_Dates$WinEmergStart, "%b %d")
+    Key_Dates$WinEmergPeak <- format(Key_Dates$WinEmergPeak, "%b %d")
+    Key_Dates$SprSpawnStart <- format(Key_Dates$SprSpawnStart, "%b %d")
+    Key_Dates$SprSpawnPeak <- format(Key_Dates$SprSpawnPeak, "%b %d")
+    Key_Dates$SprSpawnEnd <- format(Key_Dates$SprSpawnEnd, "%b %d")
+    Key_Dates$SprHatchStart <- format(Key_Dates$SprHatchStart, "%b %d")
+    Key_Dates$SprHatchPeak <- format(Key_Dates$SprHatchPeak, "%b %d")
+    Key_Dates$SprEmergStart <- format(Key_Dates$SprEmergStart, "%b %d")
+    Key_Dates$SprEmergPeak <- format(Key_Dates$SprEmergPeak, "%b %d")
     
     ## Change column names to reader-friendly
-    colnames(Key_Dates) <- c("Year", "Winter Spawn Length", "Winter Spawn Average", "Winter Hatch Average", 
-                               "Winter Emergence Average", "Spring Spawn Length", "Spring Spawn Average", "Spring Hatch Average", 
-                               "Spring Emergence Average")
+    colnames(Key_Dates) <- c("Year", "Winter Spawn Length", "Winter Spawn Start", 
+                             "Winter Spawn Peak", "Winter Spawn End", 
+                             "Winter Hatch Start", "Winter Hatch Peak", 
+                             "Winter Emergence Start", "Winter Emergence Peak", 
+                             "Spring Spawn Length", "Spring Spawn Start", 
+                             "Spring Spawn Peak", "Spring Spawn End", 
+                             "Spring Hatch Start", "Spring Hatch Peak", 
+                             "Spring Emergence Start", "Spring Emergence Peak")
     
     ## Return final table
     return(Key_Dates)
