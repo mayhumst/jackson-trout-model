@@ -416,7 +416,7 @@ show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_
     
     ## Add warning symbol if needed
     if(ret != "") {
-      ret <- paste("<img src='pics/warning.png' width='50' height='50'/>", ret, sep="")
+      ret <- paste("<img src='warning.png' width='50' height='50'/>", ret, sep="")
     }
     
     return (ret)
