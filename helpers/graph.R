@@ -375,45 +375,110 @@ show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_
   
   today_date <- as.Date(Sys.time(), tz = "America/New_York")
   
-  if(current_year == TRUE) {
-    if(species == "Brown") {
-      
-      ## Check if currently in ideal water temperature range
-      
-      ret <- "<p>Today's water temperature is "
-      if(
-        This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] > 6 && 
-        This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] < 12
-        ) {
-            
-          ret <- paste(ret, "<span style='color:red;'>within</span> the ideal temperature range for <b>Brown Trout.</b>", sep="")
-      }
-      else {
-        ret <- paste(ret, "<span style='color:green;'>not within</span> the ideal temperature range for <b>Brown Trout.</b>", sep="")
-      }
-      
-      ## Check if within spawn window
-      
-      #FSp_Start <- This_Year_Crit_Dates$SpawnStart[[1]]
-      #FSp_Peak <- This_Year_Crit_Dates$SpawnPeak[[1]]
-      #FSp_End <- This_Year_Crit_Dates$SpawnEnd[[1]]
-      #EH_hatch_start_date <- This_Year_Crit_Dates$HaStart[[1]]
-      #EH_hatch_peak_date <- This_Year_Crit_Dates$HaPeak[[1]]
-      #emergence_start_date <- This_Year_Crit_Dates$EmStart[[1]]
-      #emergence_peak_date <- This_Year_Crit_Dates$EmPeak[[1]]
-      
-      if(
-        This_Year_Crit_Dates$SpawnStart[[1]] >= today_date &&
-        This_Year_Crit_Dates$SpawnEnd[[1]] <= today_date
-         ) {
-        ret <- paste(ret, " Today's date is <span>within</span> the predicted spawn window.", sep="")
-      }
-      else {
-        ret <- paste(ret, " Today's date is <span>not within</span> the predicted spawn window.", sep="")
-      }
-      
-      ret <- paste(ret, "</p>", sep="")
-      return (ret)
+  ## Brown trout summary 
+  if(species == "Brown") {
+
+    ## Check if currently in ideal spawn conditions: in possible date range AND in ideal temp range
+    ## Must be WITHIN Oct. 1 - Dec. 31 AND within 6 degrees and 12 degrees
+    if(
+      as.integer(format(today_date, "%m")) >= 10 && 
+      This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] > 6 && 
+      This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] < 12
+    ) {
+      line1 <- "<p>Today's water temperature is <span style='color:red;'>within</span> the temperature range for Brown Trout spawning. Spawn activity is possible.</p>"
+    } else {
+      line1 <- ""
     }
+    
+    
+    ## Check if in window from spawn to emergence
+    ## spawn must have at least STARTED, and emergence peak not yet known OR is today
+    if(
+      !is.na(This_Year_Crit_Dates$SpawnStart[[1]]) &&
+      (is.na(This_Year_Crit_Dates$EmPeak[[1]]) || This_Year_Crit_Dates$EmPeak[[1]] == today_date)
+    ) {
+      line2 <- "<p>Brown trout embryos are growing in the gravel. Avoid wading on spawning gravels.</p>"
+    } else {
+      line2 <- ""
+    }
+    
+    
+    ## check if water temps critically high
+    
+    if(This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] > 20) { 
+      line3 <- "<p>Due to critically high water temperatures, fish are under stress and may be easily injured. Consider targeting other rivers.</p>"
+    } else {
+      line3 <- ""
+    }
+    
+    
+    ret <- paste(line1, line2, line3, sep="")
+    return (ret)
+    
   }
+  
+  
+  ## Rainbow trout summary 
+  if(species == "Rainbow") {
+    
+    ## Check if currently in ideal spawn conditions: in possible date range AND in ideal temp range
+    ## Winter: Must be WITHIN Dec 15 - Jan 15 AND within 6 degrees and 9 degrees
+    if(
+      (
+        (as.integer(format(today_date, "%m")) == 12 && as.integer(format(today_date, "%d")) >= 15) || 
+        (as.integer(format(today_date, "%m")) == 1 && as.integer(format(today_date, "%d")) <= 15)
+      ) &&
+      This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] > 6 && 
+      This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] < 9
+    ) {
+      line1 <- "<p>Today's water temperature is <span style='color:red;'>within</span> the temperature range for Rainbow Trout spawning. Spawn activity is possible.</p>"
+    } 
+    ## Spring: Must be AFTER Jan 31 AND within 6 degrees and 9 degrees
+    else if(
+      as.integer(format(today_date, "%m")) >= 2 &&
+      This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] > 6 && 
+      This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] < 9
+    ) {
+      line1 <- "<p>Today's water temperature is <span style='color:red;'>within</span> the temperature range for Rainbow Trout spawning. Spawn activity is possible.</p>"
+    }
+    else {
+      line1 <- ""
+    }
+    
+    
+    ## Check if in window from spawn to emergence
+    ## spawn must have at least STARTED, and emergence peak not yet known OR is today
+    ## Winter:
+    if(
+      !is.na(This_Year_Crit_Dates$WinSpawnStart[[1]]) &&
+      (is.na(This_Year_Crit_Dates$WinEmergPeak[[1]]) || This_Year_Crit_Dates$WinEmergPeak[[1]] == today_date)
+    ) {
+      line2 <- "<p>Rainbow trout embryos are growing in the gravel. Avoid wading on spawning gravels.</p>"
+    } 
+    ## Spring:
+    else if(
+      !is.na(This_Year_Crit_Dates$SprSpawnStart[[1]]) &&
+      (is.na(This_Year_Crit_Dates$SprEmergPeak[[1]]) || This_Year_Crit_Dates$SprEmergPeak[[1]] == today_date)
+    ) {
+      line2 <- "<p>Rainbow trout embryos are growing in the gravel. Avoid wading on spawning gravels.</p>"
+    } else {
+      line2 <- ""
+    }
+    
+    
+    ## check if water temps critically high
+    
+    if(This_Year_Temps$MeanT[This_Year_Temps$Date == today_date] > 20) { 
+      line3 <- "<p>Due to critically high water temperatures, fish are under stress and may be easily injured. Consider targeting other rivers.</p>"
+    } else {
+      line3 <- ""
+    }
+    
+    
+    ret <- paste(line1, line2, line3, sep="")
+    return (ret)
+    
+    
+  }
+  
 }
