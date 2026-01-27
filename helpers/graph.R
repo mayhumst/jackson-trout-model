@@ -413,6 +413,12 @@ show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_
     
     
     ret <- paste(line1, line2, line3, sep="")
+    
+    ## Add warning symbol if needed
+    if(ret != "") {
+      ret <- paste("<img src='pics/warning.png' width='50' height='50'/>", ret, sep="")
+    }
+    
     return (ret)
     
   }
@@ -476,6 +482,12 @@ show_summary <- function(current_year, species, This_Year_Temps, This_Year_Crit_
     
     
     ret <- paste(line1, line2, line3, sep="")
+    
+    ## Add warning symbol if needed
+    if(ret != "") {
+      ret <- paste("<img src='pics/warning.png' width='50' height='50'/>", ret, sep="")
+    }
+    
     return (ret)
     
     

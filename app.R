@@ -22,6 +22,9 @@ source("./helpers/load_data.R")
 source("./server.R")
 source("./ui.R")
 
+## Make resources in the /www directory available to reference via the nickname 'pics'
+addResourcePath(prefix = 'pics', directoryPath = './www')
+
 ## Download/process/update data
 load_data()
 
