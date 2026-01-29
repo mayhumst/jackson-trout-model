@@ -76,5 +76,6 @@ View this model in [GitHub](https://github.com/mayhumst/jackson-trout-model)
 
 description <- 
 "
-Any content I want
+Content coming soon
 "
+
